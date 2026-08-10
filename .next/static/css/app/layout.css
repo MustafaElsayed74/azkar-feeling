@@ -695,6 +695,9 @@ video {
 .h-full{
   height: 100%;
 }
+.h-3{
+  height: 0.75rem;
+}
 .min-h-screen{
   min-height: 100vh;
 }
@@ -730,6 +733,9 @@ video {
 }
 .w-full{
   width: 100%;
+}
+.w-3{
+  width: 0.75rem;
 }
 .max-w-3xl{
   max-width: 48rem;
@@ -1539,6 +1545,10 @@ body {
     margin-bottom: 2rem;
   }
 
+  .sm\:inline{
+    display: inline;
+  }
+
   .sm\:flex{
     display: flex;
   }
@@ -1565,6 +1575,10 @@ body {
 
   .sm\:flex-row{
     flex-direction: row;
+  }
+
+  .sm\:justify-start{
+    justify-content: flex-start;
   }
 
   .sm\:gap-4{

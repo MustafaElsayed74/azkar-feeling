@@ -1,19 +1,26 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Copy, Check, Heart, Volume2, Share2, Sparkles, Repeat, BookOpen, Quote, Type } from 'lucide-react';
+import { Copy, Check, Heart, Volume2, Share2, Sparkles, Repeat, BookOpen, Quote } from 'lucide-react';
 import { DuaItem } from '@/types';
+import { SITE_URL } from '@/lib/constants';
 
 interface DuaCardProps {
   dua: DuaItem;
   feelingName?: string;
+  feelingSlug?: string;
   isBookmarked?: boolean;
   onToggleBookmark?: (dua: DuaItem) => void;
 }
 
-export const DuaCard: React.FC<DuaCardProps> = ({ dua, feelingName, isBookmarked = false, onToggleBookmark }) => {
+export const DuaCard: React.FC<DuaCardProps> = ({
+  dua,
+  feelingName,
+  feelingSlug,
+  isBookmarked = false,
+  onToggleBookmark,
+}) => {
   const [showTransliteration, setShowTransliteration] = useState(false);
-  const [showTranslation, setShowTranslation] = useState(true);
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(isBookmarked);
 
@@ -21,8 +28,11 @@ export const DuaCard: React.FC<DuaCardProps> = ({ dua, feelingName, isBookmarked
     setSaved(isBookmarked);
   }, [isBookmarked]);
 
+  const targetSlug = feelingSlug || (dua as any).feeling_slug;
+  const duaUrl = targetSlug ? `${SITE_URL}/feeling/${targetSlug}` : SITE_URL;
+
   const handleCopy = () => {
-    const textToCopy = `✨ ${dua.title}\n\n${dua.arabic || ''}\n\nالتفسير:\n${dua.translation || ''}\n\nالمصدر: ${dua.reference || dua.quran_reference || 'أذكار وأدعية'}`;
+    const textToCopy = `✨ ${dua.title}\n\n${dua.arabic || ''}\n\nالتفسير والمعنى:\n${dua.translation || ''}\n\nالمصدر: ${dua.reference || dua.quran_reference || 'أذكار وأدعية'}\nرابط الاستماع والقراءة: ${duaUrl}`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -32,8 +42,8 @@ export const DuaCard: React.FC<DuaCardProps> = ({ dua, feelingName, isBookmarked
     if (navigator.share) {
       navigator.share({
         title: dua.title,
-        text: `${dua.title}\n${dua.arabic || ''}`,
-        url: window.location.href,
+        text: `✨ ${dua.title}\n${dua.arabic || ''}\n\nأذكار وأدعية حسب شعورك:`,
+        url: duaUrl,
       }).catch(() => {});
     } else {
       handleCopy();
@@ -91,19 +101,21 @@ export const DuaCard: React.FC<DuaCardProps> = ({ dua, feelingName, isBookmarked
           {/* Copy Button */}
           <button
             onClick={handleCopy}
-            className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-all active:scale-95"
-            title="نسخ النص"
+            className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-all active:scale-95 flex items-center gap-1.5 text-xs font-bold"
+            title="نسخ النص والرابط"
           >
-            {copied ? <Check className="w-4.5 h-4.5 text-emerald-400" /> : <Copy className="w-4.5 h-4.5" />}
+            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            <span className="hidden sm:inline">{copied ? 'تم النسخ' : 'نسخ'}</span>
           </button>
 
           {/* Share Button */}
           <button
             onClick={handleShare}
-            className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-all active:scale-95"
-            title="مشاركة"
+            className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-all active:scale-95 flex items-center gap-1.5 text-xs font-bold"
+            title="مشاركة الذكر ورابط الموقع"
           >
-            <Share2 className="w-4.5 h-4.5" />
+            <Share2 className="w-4 h-4" />
+            <span className="hidden sm:inline">مشاركة</span>
           </button>
 
           {/* Bookmark Button */}
@@ -120,7 +132,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({ dua, feelingName, isBookmarked
               }`}
               title={saved ? 'إزالة من المحفوظات' : 'حفظ في المفضلة'}
             >
-              <Heart className={`w-4.5 h-4.5 ${saved ? 'fill-rose-400' : ''}`} />
+              <Heart className={`w-4 h-4 ${saved ? 'fill-rose-400' : ''}`} />
             </button>
           )}
         </div>
@@ -192,9 +204,14 @@ export const DuaCard: React.FC<DuaCardProps> = ({ dua, feelingName, isBookmarked
               {dua.quran_reference || dua.reference}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 font-medium">
-            مصدر موثوق
-          </span>
+          <a
+            href={duaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-emerald-400 font-bold hover:underline"
+          >
+            azkar-feeling.vercel.app
+          </a>
         </div>
       )}
     </div>

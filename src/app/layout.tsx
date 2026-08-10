@@ -1,15 +1,28 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { MobileNav } from '@/components/MobileNav';
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'أذكار وأدعية حسب شعورك | أدعية من القرآن والسنة',
-  description: 'موسوعة إسلامية تفاعلية للأذكار والأدعية حسب حالتك النفسية والشعورية (حزين، قلق، غاضب، شاكر، وحيد، مكتئب، حائر وغيرها).',
-  keywords: ['أذكار', 'أدعية حسب الشعور', 'أدعية نبوية', 'أدعية من القرآن', 'حصن المسلم', 'دعاء الحزن', 'دعاء القلق'],
+  description: SITE_DESCRIPTION,
+  keywords: ['أذكار', 'أدعية حسب الشعور', 'أدعية نبوية', 'أدعية من القرآن', 'حصن المسلم', 'دعاء الحزن', 'دعاء القلق', 'azkar feeling'],
   openGraph: {
     title: 'أذكار وأدعية حسب شعورك',
-    description: 'اعثر على الدعاء أو الذكر المناسب لحالتك النفسية من السنة النبوية والقرآن الكريم.',
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: 'ar_SA',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'أذكار وأدعية حسب شعورك',
+    description: SITE_DESCRIPTION,
+  },
+  alternates: {
+    canonical: SITE_URL,
   },
 };
 
