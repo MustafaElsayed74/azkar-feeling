@@ -12,23 +12,16 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange, bookmarkCount = 0 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-[#0b1329]/90 backdrop-blur-md border-b border-slate-800/60">
+    <header className="sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/60" style={{ backgroundColor: 'rgba(11,19,41,0.92)' }}>
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg"
-            style={{ backgroundColor: 'rgba(203,161,212,0.12)', border: '1px solid rgba(203,161,212,0.3)', color: '#CBA1D4' }}
-          >
+          <div className="theme-icon-wrap w-9 h-9 rounded-xl text-lg">
             🤲
           </div>
           <div>
-            <span className="text-base font-bold text-slate-100 block">
-              أذكار وأدعية
-            </span>
-            <span className="text-[10px] text-slate-400 font-medium">
-              حسب الشعور
-            </span>
+            <span className="text-base font-bold text-slate-100 block">أذكار وأدعية</span>
+            <span className="text-[10px] text-slate-400 font-medium">حسب الشعور</span>
           </div>
         </Link>
 
@@ -41,7 +34,10 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="ابحث عن إحساس أو دعاء..."
-              className="w-full bg-slate-900/90 border border-slate-800 rounded-xl pr-9 pl-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#CBA1D4]/50 transition-colors"
+              className="w-full bg-slate-900/90 border border-slate-800 rounded-xl pr-9 pl-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
+              style={{ '--tw-ring-color': '#CBA1D4' } as any}
+              onFocus={e => (e.target.style.borderColor = '#CBA1D4')}
+              onBlur={e => (e.target.style.borderColor = '')}
             />
           </div>
         )}
@@ -54,10 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
           <Heart className="w-4 h-4 text-rose-400" />
           <span>المحفوظات</span>
           {bookmarkCount > 0 && (
-            <span
-              className="font-bold text-[10px] px-1.5 py-0.5 rounded-full mr-0.5"
-              style={{ backgroundColor: '#CBA1D4', color: '#0b1329' }}
-            >
+            <span className="theme-accent-bg font-bold text-[10px] px-1.5 py-0.5 rounded-full mr-0.5" style={{ color: '#0b1329' }}>
               {bookmarkCount}
             </span>
           )}

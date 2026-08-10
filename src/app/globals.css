@@ -4,58 +4,140 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================
+   THEME COLORS
+   Lavender: #CBA1D4
+   Butter Yellow: #FEEB9C
+   Background: #0b1329
+   ========================================== */
+
 :root {
+  --lavender: #CBA1D4;
+  --butter: #FEEB9C;
+  --bg: #0b1329;
+  --card-bg: #0f172a;
   --font-amiri: 'Amiri', serif;
   --font-cairo: 'Cairo', sans-serif;
 }
 
 body {
   font-family: var(--font-cairo);
-  background-color: #0b1329;
+  background-color: var(--bg);
   color: #e2e8f0;
   min-height: 100vh;
   direction: rtl;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Minimal Card Base */
+/* ==========================================
+   THEME UTILITY CLASSES
+   ========================================== */
+
+.theme-accent { color: var(--lavender) !important; }
+.theme-accent-bg { background-color: var(--lavender) !important; }
+.theme-accent-border { border-color: var(--lavender) !important; }
+
+.theme-butter { color: var(--butter) !important; }
+.theme-butter-bg { background-color: var(--butter) !important; }
+
+.theme-icon-wrap {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(203, 161, 212, 0.12);
+  border: 1px solid rgba(203, 161, 212, 0.3);
+  color: var(--butter);
+  transition: transform 0.3s;
+}
+
+.theme-icon-wrap:hover { transform: scale(1.1); }
+
+.theme-badge {
+  background-color: rgba(254, 235, 156, 0.12);
+  color: var(--butter);
+  border: 1px solid rgba(254, 235, 156, 0.3);
+}
+
+.theme-card {
+  background: linear-gradient(135deg, #0f172a, #0b1329);
+  border: 1px solid rgba(203, 161, 212, 0.15);
+  border-radius: 1rem;
+  transition: border-color 0.3s;
+}
+
+.theme-card:hover {
+  border-color: rgba(203, 161, 212, 0.4);
+}
+
+.theme-orb {
+  position: absolute;
+  top: -1.5rem;
+  right: -1.5rem;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #CBA1D4, #FEEB9C);
+  opacity: 0.12;
+  filter: blur(2rem);
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.theme-card:hover .theme-orb { opacity: 0.25; }
+
+/* ==========================================
+   CARD BASE
+   ========================================== */
+
 .clean-card {
-  background-color: #121d38;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: #0f172a;
+  border: 1px solid rgba(203, 161, 212, 0.12);
   border-radius: 1.25rem;
   transition: all 0.2s ease-in-out;
 }
 
 .clean-card:hover {
-  border-color: rgba(203, 161, 212, 0.3);
+  border-color: rgba(203, 161, 212, 0.35);
   transform: translateY(-1px);
 }
 
-/* Arabic Naskh Typography */
+.glass-card {
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(203, 161, 212, 0.15);
+  border-radius: 1.25rem;
+}
+
+/* ==========================================
+   ARABIC TYPOGRAPHY
+   ========================================== */
+
 .font-arabic {
   font-family: var(--font-amiri);
   line-height: 2.1;
   word-spacing: 2px;
 }
 
-/* Smooth Scrollbar */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: #0b1329;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
-}
+/* ==========================================
+   SCROLLBAR
+   ========================================== */
 
-/* Hide scrollbar for pills */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(203, 161, 212, 0.3); border-radius: 9999px; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ==========================================
+   LINKS & INTERACTIVE
+   ========================================== */
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--lavender);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
