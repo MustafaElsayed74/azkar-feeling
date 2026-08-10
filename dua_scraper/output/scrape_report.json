@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-08-10T22:40:30.125693",
+  "finished_at": "2026-08-10T22:41:19.588825",
+  "duration_seconds": 49.46,
+  "feelings_discovered": 28,
+  "feelings_scraped_successfully": 28,
+  "feelings_failed": 0,
+  "total_duas": 277,
+  "total_arabic_entries": 277,
+  "entries_with_reference": 226,
+  "entries_with_audio": 0,
+  "duplicate_entries_removed": 0
+}
