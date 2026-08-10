@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -11,74 +11,47 @@
 
 body {
   font-family: var(--font-cairo);
-  background-color: #080d1a;
-  color: #f1f5f9;
+  background-color: #0b1329;
+  color: #e2e8f0;
   min-height: 100vh;
-  overflow-x: hidden;
   direction: rtl;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Custom Glassmorphism */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Minimal Card Base */
+.clean-card {
+  background-color: #121d38;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+  transition: all 0.2s ease-in-out;
 }
 
-.glass-card {
-  background: rgba(18, 26, 47, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+.clean-card:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
 }
 
-.glass-card:hover {
-  border-color: rgba(52, 211, 153, 0.4);
-  box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.18);
-  transform: translateY(-3px);
-}
-
-/* Arabic Naskh Typography styling for Quran/Dua */
+/* Arabic Naskh Typography */
 .font-arabic {
   font-family: var(--font-amiri);
-  line-height: 2.2;
-  letter-spacing: 0;
-  word-spacing: 3px;
+  line-height: 2.1;
+  word-spacing: 2px;
 }
 
-/* Smooth custom scrollbars */
+/* Smooth Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #080d1a;
+  background: #0b1329;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #1e293b;
-  border-radius: 4px;
+  border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
-}
-
-/* Text Selection Glow */
-::selection {
-  background: rgba(16, 185, 129, 0.35);
-  color: #ffffff;
-}
-
-/* Radial Glow Background */
-.radial-bg {
-  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.14) 0%, rgba(8, 13, 26, 0) 70%);
-}
-
-/* Hide scrollbar for horizontal mobile pill scroll */
+/* Hide scrollbar for pills */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

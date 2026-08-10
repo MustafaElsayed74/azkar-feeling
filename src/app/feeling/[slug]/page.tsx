@@ -43,68 +43,62 @@ export default function FeelingPage({ params }: FeelingPageProps) {
   const nextGroup = currentIndex < allGroups.length - 1 ? allGroups[currentIndex + 1] : null;
 
   return (
-    <div className="flex flex-col min-h-screen dir-rtl">
+    <div className="flex flex-col min-h-screen dir-rtl bg-[#0b1329]">
       <Header />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-        {/* Back Button */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8">
+        {/* Back Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-emerald-400 transition-colors mb-5"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-emerald-400 transition-colors mb-4"
         >
           <ArrowRight className="w-4 h-4" />
           <span>الرجوع لجميع المشاعر</span>
         </Link>
 
-        {/* Hero Header */}
-        <div className={`glass-card p-6 sm:p-10 rounded-3xl mb-8 border ${theme.border} relative overflow-hidden`}>
-          <div className={`absolute -left-10 -top-10 w-40 h-40 rounded-full ${theme.bg} blur-3xl`} />
-
-          <div className="flex flex-wrap items-center justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-center text-3xl sm:text-4xl shadow-xl">
-                {theme.emoji}
-              </div>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 block">
-                  عندما تشعر بأنك
-                </span>
-                <h1 className="text-2xl sm:text-4xl font-black text-white mt-0.5">
-                  {group.arabic_name}
-                </h1>
-              </div>
+        {/* Minimal Category Header */}
+        <div className="clean-card p-5 sm:p-6 mb-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-2xl shrink-0">
+              {theme.emoji}
             </div>
-
-            <div className="flex items-center gap-3">
-              <span className="px-4 py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs sm:text-sm font-bold text-slate-200 shadow">
-                {group.items_count} {group.items_count === 1 ? "دعاء وذكر" : "أدعية وأذكار"}
+            <div>
+              <span className="text-[11px] font-medium text-emerald-400 block">
+                أدعية وأذكار عند
               </span>
+              <h1 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
+                {group.arabic_name}
+              </h1>
             </div>
           </div>
+
+          <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
+            {group.items_count} {group.items_count === 1 ? 'دعاء' : 'أدعية'}
+          </span>
         </div>
 
-        {/* Dua Cards List */}
+        {/* Duas List */}
         <DuaListClient group={group} />
 
-        {/* Previous & Next Emotion Pagination */}
-        <div className="flex items-center justify-between gap-4 mt-12 pt-6 border-t border-slate-800/80">
+        {/* Pagination */}
+        <div className="flex items-center justify-between gap-4 mt-8 pt-4 border-t border-slate-800/60 text-xs">
           {prevGroup ? (
             <Link
               href={`/feeling/${prevGroup.slug}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl glass-card text-xs font-bold text-slate-300 hover:text-white hover:border-emerald-500/40 transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl clean-card text-slate-300 hover:text-white"
             >
-              <ArrowRight className="w-4 h-4 text-emerald-400" />
-              <span>السابق: {prevGroup.arabic_name || prevGroup.feeling}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{prevGroup.arabic_name || prevGroup.feeling}</span>
             </Link>
           ) : <div />}
 
           {nextGroup && (
             <Link
               href={`/feeling/${nextGroup.slug}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl glass-card text-xs font-bold text-slate-300 hover:text-white hover:border-emerald-500/40 transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl clean-card text-slate-300 hover:text-white"
             >
-              <span>التالي: {nextGroup.arabic_name || nextGroup.feeling}</span>
-              <ArrowLeft className="w-4 h-4 text-emerald-400" />
+              <span>{nextGroup.arabic_name || nextGroup.feeling}</span>
+              <ArrowLeft className="w-3.5 h-3.5 text-emerald-400" />
             </Link>
           )}
         </div>
