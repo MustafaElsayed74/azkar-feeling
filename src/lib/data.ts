@@ -1,7 +1,7 @@
 import feelingsData from '@/data/feelings.json';
 import duasByFeelingData from '@/data/duas_by_feeling.json';
 import duasFlatData from '@/data/duas_flat.json';
-import { FeelingMeta, FeelingGroup, FlatDuaItem } from '@/types';
+import { FeelingMeta, FeelingGroup, FlatDuaItem, DuaItem } from '@/types';
 
 export const EMOTION_ARABIC_NAMES: Record<string, string> = {
   sad: 'حزين',
@@ -73,6 +73,63 @@ export function getEmotionArabicName(slug: string, englishName?: string): string
 
 export function getEmotionTheme(slug: string) {
   return EMOTION_THEMES[slug.toLowerCase()] || DEFAULT_THEME;
+}
+
+/**
+ * Intelligent Arabic title converter to ensure 100% Arabic Dua titles
+ */
+export function getArabicDuaTitle(dua: DuaItem, emotionArabicName?: string): string {
+  const t = dua.title || '';
+
+  // If already contains Arabic characters, return as is
+  if (/[\u0600-\u06FF]/.test(t)) {
+    return t;
+  }
+
+  // Common Prophet & Surah title translations
+  let arabicTitle = t
+    .replace(/Duʿa of Prophet Sulayman ﷺ/gi, 'دعاء نبي الله سليمان عليه السلام')
+    .replace(/Duʿa of Prophet Yusuf ﷺ/gi, 'دعاء نبي الله يوسف عليه السلام')
+    .replace(/Duʿa of Prophet Yunus ﷺ/gi, 'دعاء نبي الله يونس عليه السلام (ذو النون)')
+    .replace(/Duʿa of Prophet Ibrahim ﷺ/gi, 'دعاء نبي الله إبراهيم عليه السلام')
+    .replace(/Duʿa of Prophet Musa ﷺ/gi, 'دعاء نبي الله موسى عليه السلام')
+    .replace(/Duʿa of Prophet Ayyub ﷺ/gi, 'دعاء نبي الله أيوب عليه السلام')
+    .replace(/Duʿa of Prophet Isa ﷺ/gi, 'دعاء نبي الله عيسى عليه السلام')
+    .replace(/Duʿa of Prophet Adam ﷺ/gi, 'دعاء آدم عليه السلام')
+    .replace(/Duʿa of the Prophet ﷺ/gi, 'دعاء النبي ﷺ')
+    .replace(/Surah al-Fatihah: The Greatest Duʿa/gi, 'سورة الفاتحة - أعظم دعاء وذِكر')
+    .replace(/Duʿa for Protection from Sadness & Anxiety/gi, 'دعاء الوقاية من الهم والحزن')
+    .replace(/Duʿa for Protection from/gi, 'دعاء الوقاية من')
+    .replace(/Duʿa for Gratitude, Good Deeds & Pious Children/gi, 'دعاء الشكر والعمل الصالح والذريّة الطيبة')
+    .replace(/Duʿa for Gratitude/gi, 'دعاء الشكر والحمد')
+    .replace(/Duʿa for A Good Ending/gi, 'دعاء حسن الخاتمة')
+    .replace(/Duʿa for Relief from Distress/gi, 'دعاء الفرج وكشف الكرب')
+    .replace(/Duʿa for Anxiety & Distress/gi, 'دعاء الهم والحزن والكرب')
+    .replace(/Duʿa for Forgiveness/gi, 'دعاء الاستغفار وطلب المغفرة')
+    .replace(/Duʿa for Patience/gi, 'دعاء طلب الصبر والنزول على الحق')
+    .replace(/Duʿa for Guidance/gi, 'دعاء طلب الهداية والتوفيق')
+    .replace(/Duʿa for Strength/gi, 'دعاء طلب القوة والثبات')
+    .replace(/Duʿa for Peace/gi, 'دعاء طلب السكينة والطمأنينة')
+    .replace(/Duʿa for Decision Making/gi, 'دعاء الاستخارة وتيسير الأمور')
+    .replace(/Duʿa for Healing & Health/gi, 'دعاء الشفاء والعافية')
+    .replace(/Duʿa for Wealth & Provision/gi, 'دعاء سعة الرزق وقضاء الدين')
+    .replace(/Duʿa for Anger/gi, 'دعاء تسكين الغضب وتهدئة النفس')
+    .replace(/Duʿa for Fear/gi, 'دعاء الأمان وذهاب الخوف')
+    .replace(/Duʿa for Laziness/gi, 'دعاء التعوذ من العجز والكسل')
+    .replace(/Duʿa for Loneliness/gi, 'دعاء ذهاب الوحشة وتيسير الأنيس')
+    .replace(/Duʿa for/gi, 'دعاء')
+    .replace(/Duʿa/gi, 'دعاء مبارك')
+    .replace(/for/gi, 'في');
+
+  // If after regex it's still pure English, construct a dignified Arabic title
+  if (!/[\u0600-\u06FF]/.test(arabicTitle)) {
+    if (emotionArabicName) {
+      return `دعاء وذِكر عند الشعور بـ (${emotionArabicName})`;
+    }
+    return 'دعاء مأثور من السنة والقرآن';
+  }
+
+  return arabicTitle;
 }
 
 export function getAllFeelings(): FeelingMeta[] {
