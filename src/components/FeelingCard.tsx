@@ -14,26 +14,34 @@ export const FeelingCard: React.FC<FeelingCardProps> = ({ name, slug, count }) =
   const theme = getEmotionTheme(slug);
   const arabicName = getEmotionArabicName(slug, name);
 
+  // Extract the first meaningful letter for the icon
+  const firstLetter = arabicName.replace(/^(ال)/, '').charAt(0);
+
   return (
-    <Link href={`/feeling/${slug}`} className="block group">
-      <div className="clean-card p-4 flex items-center justify-between gap-3 hover:border-emerald-500/40">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-center text-xl shrink-0">
-            {theme.emoji}
+    <Link href={`/feeling/${slug}`} className="block group h-full">
+      <div className="relative overflow-hidden h-full p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-[#0b1329] border border-slate-800 hover:border-emerald-500/40 transition-all duration-300">
+        {/* Abstract Glowing Orb Background */}
+        <div className={`absolute -right-6 -top-6 w-28 h-28 rounded-full opacity-10 bg-gradient-to-br ${theme.gradient} blur-2xl group-hover:opacity-20 transition-opacity duration-300`} />
+        
+        <div className="flex flex-col h-full justify-between relative z-10 gap-4">
+          <div className="flex justify-between items-start">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-slate-800/60 border border-slate-700/50 ${theme.text}`}>
+              <span className="text-lg font-bold">{firstLetter}</span>
+            </div>
+            <span className="text-[10px] sm:text-xs font-semibold px-2 py-1 rounded-lg bg-slate-800/40 text-slate-400 border border-slate-700/30">
+              {count} دعاء
+            </span>
           </div>
+          
           <div>
-            <h3 className="text-sm font-bold text-slate-100 group-hover:text-emerald-400 transition-colors">
+            <h3 className="text-sm sm:text-base font-bold text-slate-100 group-hover:text-emerald-400 transition-colors mb-1">
               {arabicName}
             </h3>
-            <p className="text-[11px] text-slate-400">
-              أدعية وأذكار عند {arabicName}
+            <p className="text-[10px] sm:text-xs text-slate-400">
+              أذكار مخصصة للقلب
             </p>
           </div>
         </div>
-
-        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 shrink-0">
-          {count}
-        </span>
       </div>
     </Link>
   );

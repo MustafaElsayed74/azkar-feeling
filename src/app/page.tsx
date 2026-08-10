@@ -98,7 +98,7 @@ export default function HomePage() {
                   href={`/feeling/${f.feeling_slug}`}
                   className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:border-emerald-500/40 transition-colors"
                 >
-                  <span>{theme.emoji}</span>
+                  <span className={`w-2 h-2 rounded-full bg-gradient-to-br ${theme.gradient}`}></span>
                   <span>{f.arabic_name}</span>
                 </Link>
               );
@@ -153,7 +153,7 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {filteredFeelings.map((feeling: any) => {
                 const group = groups.find((g) => g.slug === feeling.feeling_slug);
                 const count = group ? group.items_count : 0;
