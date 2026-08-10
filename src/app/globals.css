@@ -27,7 +27,7 @@ body {
 }
 
 .clean-card:hover {
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(203, 161, 212, 0.3);
   transform: translateY(-1px);
 }
 
