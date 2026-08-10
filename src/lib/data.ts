@@ -75,10 +75,10 @@ export const EMOTION_THEMES: Record<
   },
   grateful: {
     emoji: "✨",
-    bg: "bg-lavender-500/10",
-    border: "border-lavender-500/30",
-    text: "text-lavender-400",
-    gradient: "from-lavender-600 to-teal-400",
+    bg: "bg-[#CBA1D4]/10",
+    border: "border-[#CBA1D4]/30",
+    text: "text-[#CBA1D4]",
+    gradient: "from-[#CBA1D4] to-teal-400",
   },
   happy: {
     emoji: "☀️",
@@ -113,7 +113,7 @@ export const EMOTION_THEMES: Record<
     bg: "bg-teal-500/10",
     border: "border-teal-500/30",
     text: "text-teal-400",
-    gradient: "from-teal-600 to-lavender-400",
+    gradient: "from-teal-600 to-[#CBA1D4]",
   },
   confident: {
     emoji: "🦁",
@@ -127,7 +127,7 @@ export const EMOTION_THEMES: Record<
     bg: "bg-green-500/10",
     border: "border-green-500/30",
     text: "text-green-400",
-    gradient: "from-green-600 to-lavender-400",
+    gradient: "from-green-600 to-[#CBA1D4]",
   },
   doubtful: {
     emoji: "🧩",
@@ -229,19 +229,19 @@ export const EMOTION_THEMES: Record<
   },
   weak: {
     emoji: "⛰️",
-    bg: "bg-lavender-500/10",
-    border: "border-lavender-500/30",
-    text: "text-lavender-400",
-    gradient: "from-lavender-600 to-teal-400",
+    bg: "bg-[#CBA1D4]/10",
+    border: "border-[#CBA1D4]/30",
+    text: "text-[#CBA1D4]",
+    gradient: "from-[#CBA1D4] to-teal-400",
   },
 };
 
 export const DEFAULT_THEME = {
   emoji: "🤲",
-  bg: "bg-lavender-500/10",
-  border: "border-lavender-500/30",
-  text: "text-lavender-400",
-  gradient: "from-lavender-600 to-teal-400",
+  bg: "bg-[#CBA1D4]/10",
+  border: "border-[#CBA1D4]/30",
+  text: "text-[#CBA1D4]",
+  gradient: "from-[#CBA1D4] to-teal-400",
 };
 
 export function getEmotionArabicName(

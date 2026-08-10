@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-lavender-500/15 border border-lavender-500/30 flex items-center justify-center text-lavender-400 font-bold text-lg">
+          <div className="w-9 h-9 rounded-xl bg-[#CBA1D4]/15 border border-[#CBA1D4]/30 flex items-center justify-center text-[#CBA1D4] font-bold text-lg">
             🤲
           </div>
           <div>
@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="ابحث عن إحساس أو دعاء..."
-              className="w-full bg-slate-900/90 border border-slate-800 rounded-xl pr-9 pl-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lavender-500/50 transition-colors"
+              className="w-full bg-slate-900/90 border border-slate-800 rounded-xl pr-9 pl-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#CBA1D4]/50 transition-colors"
             />
           </div>
         )}
@@ -51,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
           <Heart className="w-4 h-4 text-rose-400" />
           <span>المحفوظات</span>
           {bookmarkCount > 0 && (
-            <span className="bg-lavender-500 text-slate-950 font-bold text-[10px] px-1.5 py-0.5 rounded-full mr-0.5">
+            <span className="bg-[#CBA1D4] text-slate-950 font-bold text-[10px] px-1.5 py-0.5 rounded-full mr-0.5">
               {bookmarkCount}
             </span>
           )}

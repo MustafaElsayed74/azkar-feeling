@@ -52,14 +52,14 @@ export default function BookmarksPage() {
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-lavender-400 transition-colors mb-5"
+          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-[#CBA1D4] transition-colors mb-5"
         >
           <ArrowRight className="w-4 h-4" />
           <span>الرجوع لجميع المشاعر</span>
         </Link>
 
         {/* Page Title */}
-        <div className="glass-card p-6 sm:p-8 rounded-3xl mb-8 border border-lavender-500/30 flex flex-wrap items-center justify-between gap-4">
+        <div className="glass-card p-6 sm:p-8 rounded-3xl mb-8 border border-[#CBA1D4]/30 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shadow-inner">
               <Heart className="w-7 h-7 fill-rose-500/30" />
@@ -106,7 +106,7 @@ export default function BookmarksPage() {
             </p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-2xl bg-lavender-500 text-slate-950 font-black text-xs hover:bg-lavender-400 transition-colors shadow-lg shadow-lavender-500/20"
+              className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-2xl bg-[#CBA1D4] text-slate-950 font-black text-xs hover:bg-[#CBA1D4] transition-colors shadow-lg shadow-[#CBA1D4]/20"
             >
               تصفح المشاعر الآن
             </Link>

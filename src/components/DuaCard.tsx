@@ -82,7 +82,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({
             {arabicTitle}
           </h3>
           {feelingName && (
-            <span className="text-[11px] text-lavender-400 font-semibold block mt-0.5">
+            <span className="text-[11px] text-[#CBA1D4] font-semibold block mt-0.5">
               الشعور: {feelingName}
             </span>
           )}
@@ -118,7 +118,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({
       {/* Pure Arabic Text Box */}
       {dua.arabic && (
         <div className="py-4 my-2 text-right">
-          <p className="font-arabic text-2xl sm:text-3xl text-lavender-200 leading-loose tracking-wide select-all">
+          <p className="font-arabic text-2xl sm:text-3xl text-[#CBA1D4] leading-loose tracking-wide select-all">
             {dua.arabic}
           </p>
         </div>
@@ -127,7 +127,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({
       {/* Audio Player (if active) */}
       {showAudio && dua.audio_url && (
         <div className="my-3 p-2.5 bg-slate-900/90 rounded-xl border border-slate-800">
-          <audio controls autoPlay className="w-full h-8 accent-lavender-500">
+          <audio controls autoPlay className="w-full h-8 accent-[#CBA1D4]">
             <source src={dua.audio_url} />
             المتصفح لا يدعم التشغيل الصوتي.
           </audio>
@@ -139,7 +139,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({
         <div className="mt-4 pt-4 border-t border-slate-800/60 space-y-3 text-xs text-slate-300">
           {dua.translation && (
             <div>
-              <span className="font-bold text-lavender-400 block mb-1">الترجمة الإنجليزية (English Translation):</span>
+              <span className="font-bold text-[#CBA1D4] block mb-1">الترجمة الإنجليزية (English Translation):</span>
               <p className="text-slate-300 font-sans dir-ltr text-left bg-slate-900/50 p-3 rounded-lg border border-slate-800 leading-relaxed">
                 {dua.translation}
               </p>
@@ -170,7 +170,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({
       <div className="mt-5 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
         {/* Arabic Reference */}
         <div className="flex items-center gap-1.5 text-slate-300">
-          <BookOpen className="w-3.5 h-3.5 text-lavender-400 shrink-0" />
+          <BookOpen className="w-3.5 h-3.5 text-[#CBA1D4] shrink-0" />
           <span className="font-semibold text-[11px] truncate max-w-[200px] sm:max-w-xs">
             {arabicRef}
           </span>
@@ -190,7 +190,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({
           {dua.audio_url && (
             <button
               onClick={() => setShowAudio(!showAudio)}
-              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-lavender-400 transition-colors"
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-[#CBA1D4] transition-colors"
               title="تلاوة صوتية"
             >
               <Volume2 className="w-3.5 h-3.5" />
@@ -202,7 +202,7 @@ export const DuaCard: React.FC<DuaCardProps> = ({
             className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors"
             title="نسخ الذكر"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-lavender-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-[#CBA1D4]" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
 
           <button
