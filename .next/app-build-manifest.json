@@ -12,18 +12,9 @@
       "static/chunks/fd9d1056-8a315e091f10e2dd.js",
       "static/chunks/117-4390699245d4efc1.js",
       "static/chunks/main-app-2682a8e5ade19e02.js",
-      "static/css/8273197ae1069e65.css",
+      "static/css/57285d64b38b2701.css",
       "static/chunks/95-23dc9522078803d6.js",
-      "static/chunks/app/layout-028c4163a3915ed2.js"
-    ],
-    "/bookmarks/page": [
-      "static/chunks/webpack-616e068a201ad621.js",
-      "static/chunks/fd9d1056-8a315e091f10e2dd.js",
-      "static/chunks/117-4390699245d4efc1.js",
-      "static/chunks/main-app-2682a8e5ade19e02.js",
-      "static/chunks/95-23dc9522078803d6.js",
-      "static/chunks/604-8a1ed6fb19062f29.js",
-      "static/chunks/app/bookmarks/page-6816a3c606d4dd49.js"
+      "static/chunks/app/layout-285f8af16031c541.js"
     ],
     "/page": [
       "static/chunks/webpack-616e068a201ad621.js",
@@ -32,8 +23,17 @@
       "static/chunks/main-app-2682a8e5ade19e02.js",
       "static/chunks/95-23dc9522078803d6.js",
       "static/chunks/613-e11e8741598908cb.js",
-      "static/chunks/604-8a1ed6fb19062f29.js",
-      "static/chunks/app/page-c76198b1ff5555b6.js"
+      "static/chunks/604-b40bddb8d1950729.js",
+      "static/chunks/app/page-e88664fa32626166.js"
+    ],
+    "/bookmarks/page": [
+      "static/chunks/webpack-616e068a201ad621.js",
+      "static/chunks/fd9d1056-8a315e091f10e2dd.js",
+      "static/chunks/117-4390699245d4efc1.js",
+      "static/chunks/main-app-2682a8e5ade19e02.js",
+      "static/chunks/95-23dc9522078803d6.js",
+      "static/chunks/604-b40bddb8d1950729.js",
+      "static/chunks/app/bookmarks/page-6816a3c606d4dd49.js"
     ],
     "/feeling/[slug]/page": [
       "static/chunks/webpack-616e068a201ad621.js",
@@ -41,7 +41,7 @@
       "static/chunks/117-4390699245d4efc1.js",
       "static/chunks/main-app-2682a8e5ade19e02.js",
       "static/chunks/95-23dc9522078803d6.js",
-      "static/chunks/604-8a1ed6fb19062f29.js",
+      "static/chunks/604-b40bddb8d1950729.js",
       "static/chunks/app/feeling/[slug]/page-0b761f2f63e97be6.js"
     ]
   }

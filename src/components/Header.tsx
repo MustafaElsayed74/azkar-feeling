@@ -16,7 +16,10 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-[#CBA1D4]/15 border border-[#CBA1D4]/30 flex items-center justify-center text-[#CBA1D4] font-bold text-lg">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg"
+            style={{ backgroundColor: 'rgba(203,161,212,0.12)', border: '1px solid rgba(203,161,212,0.3)', color: '#CBA1D4' }}
+          >
             🤲
           </div>
           <div>
@@ -51,7 +54,10 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
           <Heart className="w-4 h-4 text-rose-400" />
           <span>المحفوظات</span>
           {bookmarkCount > 0 && (
-            <span className="bg-[#CBA1D4] text-slate-950 font-bold text-[10px] px-1.5 py-0.5 rounded-full mr-0.5">
+            <span
+              className="font-bold text-[10px] px-1.5 py-0.5 rounded-full mr-0.5"
+              style={{ backgroundColor: '#CBA1D4', color: '#0b1329' }}
+            >
               {bookmarkCount}
             </span>
           )}
