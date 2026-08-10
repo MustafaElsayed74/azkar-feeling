@@ -75,7 +75,7 @@ export default function HomePage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="ابحث عن شعور أو دعاء..."
-            className="w-full bg-slate-900 border border-slate-800 rounded-xl pr-9 pl-4 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+            className="w-full bg-slate-900 border border-slate-800 rounded-xl pr-9 pl-4 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-lavender-500/50"
           />
         </div>
 
@@ -96,7 +96,7 @@ export default function HomePage() {
                 <Link
                   key={f.feeling_slug}
                   href={`/feeling/${f.feeling_slug}`}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:border-emerald-500/40 transition-colors"
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:border-lavender-500/40 transition-colors"
                 >
                   <span className={`w-2 h-2 rounded-full bg-gradient-to-br ${theme.gradient}`}></span>
                   <span>{f.arabic_name}</span>
@@ -111,12 +111,12 @@ export default function HomePage() {
           <div className="my-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-                <Search className="w-4 h-4 text-emerald-400" />
+                <Search className="w-4 h-4 text-lavender-400" />
                 <span>نتائج البحث ({searchResults.length})</span>
               </h2>
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-xs text-emerald-400 hover:underline font-semibold"
+                className="text-xs text-lavender-400 hover:underline font-semibold"
               >
                 إلغاء البحث
               </button>
@@ -148,7 +148,7 @@ export default function HomePage() {
           <div className="my-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-bold text-slate-300 flex items-center gap-2">
-                <Compass className="w-4 h-4 text-emerald-400" />
+                <Compass className="w-4 h-4 text-lavender-400" />
                 <span>المشاعر والأحاسيس ({filteredFeelings.length})</span>
               </h2>
             </div>

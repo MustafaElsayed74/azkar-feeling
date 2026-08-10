@@ -17,7 +17,7 @@ export const MobileNav: React.FC = () => {
         <Link
           href="/"
           className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors ${
-            isHome ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-200'
+            isHome ? 'text-lavender-400' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Compass className="w-5 h-5" />
