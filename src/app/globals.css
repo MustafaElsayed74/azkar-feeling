@@ -306,6 +306,13 @@ div.divider {
   text-align: left;
 }
 
+.detail-copy-arabic {
+  font-family: var(--font-cairo), system-ui, sans-serif;
+  line-height: 2;
+  text-align: right;
+  white-space: pre-line;
+}
+
 .icon-button,
 .secondary-button,
 .primary-button,
@@ -379,6 +386,50 @@ div.divider {
 
 .source-link {
   font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.share-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: var(--surface-soft);
+}
+
+.share-option {
+  display: inline-flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.share-option:hover {
+  border-color: var(--lavender);
+  background: var(--butter);
+  transform: translateY(-1px);
+}
+
+.share-option:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+}
+
+.share-status {
+  margin-top: 0.65rem;
+  color: var(--muted);
+  font-size: 0.72rem;
   font-weight: 700;
 }
 

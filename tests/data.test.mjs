@@ -53,3 +53,43 @@ test('the normalized search model has one entry per unique dua', () => {
   assert.equal(uniqueDuas.size, 103);
   assert.equal(flat.length, 277);
 });
+
+test('every dua context has an Arabic source text', () => {
+  const manualContexts = {
+    'Istiʿadhah #1':
+      'قال الله تعالى: فإذا قرأت القرآن فاستعذ بالله من الشيطان الرجيم.',
+  };
+  const uniqueContexts = new Map();
+
+  for (const dua of flat.filter((item) => item.hadith || item.virtue)) {
+    const [primaryArabic, ...embeddedLines] = dua.arabic.split(/\r?\n/);
+    const key = `${dua.title}\u0000${primaryArabic.trim()}`;
+    const arabicReference = (dua.reference || '')
+      .split(/\r?\n/)
+      .filter((line) => /[\u0600-\u06FF]/.test(line))
+      .join('\n')
+      .trim();
+    const candidates = [
+      arabicReference,
+      embeddedLines.join('\n').trim(),
+      manualContexts[dua.title] || '',
+    ].filter(
+      (value) => value.replace(/[^\u0621-\u064A]/g, '').length >= 45,
+    );
+    const bestContext = candidates.sort((a, b) => b.length - a.length)[0];
+    const existing = uniqueContexts.get(key);
+
+    if (bestContext && (!existing || bestContext.length > existing.length)) {
+      uniqueContexts.set(key, bestContext);
+    } else if (!uniqueContexts.has(key)) {
+      uniqueContexts.set(key, '');
+    }
+  }
+
+  assert.equal(uniqueContexts.size, 84);
+  for (const [key, context] of uniqueContexts) {
+    assert.ok(context, `Missing Arabic context: ${key.split('\u0000')[0]}`);
+    assert.match(context, /[\u0600-\u06FF]/, key);
+    assert.doesNotMatch(context, /[A-Za-z]/, key);
+  }
+});

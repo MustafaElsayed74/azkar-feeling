@@ -9,6 +9,7 @@ export interface DuaItem {
   benefit: string | null;
   virtue: string | null;
   hadith: string | null;
+  context_arabic?: string | null;
   reference: string | null;
   source: string;
   quran_reference: string | null;

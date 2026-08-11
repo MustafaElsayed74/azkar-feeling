@@ -266,6 +266,80 @@ function enrichQuranMetadata<T extends DuaItem>(dua: T): T {
   };
 }
 
+const MANUAL_ARABIC_CONTEXTS: Record<string, string> = {
+  "Istiʿadhah #1":
+    "قال الله تعالى: ﴿فَإِذَا قَرَأْتَ الْقُرْآنَ فَاسْتَعِذْ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ﴾. (سورة النحل: ٩٨)",
+};
+
+function getPrimaryArabicText(value: string | null): string | null {
+  if (!value) return value;
+  return value.split(/\r?\n/, 1)[0]?.trim() || value.trim();
+}
+
+function getEmbeddedArabicContext(value: string | null): string | null {
+  if (!value) return null;
+  const [, ...contextLines] = value.split(/\r?\n/);
+  const context = contextLines.join("\n").trim();
+  return context || null;
+}
+
+function getArabicReferenceText(value: string | null): string | null {
+  if (!value) return null;
+
+  const arabicLines = value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => /[\u0600-\u06ff]/.test(line));
+
+  return arabicLines.join("\n").trim() || null;
+}
+
+function isSubstantiveArabicContext(value: string | null): value is string {
+  if (!value) return false;
+  return value.replace(/[^\u0621-\u064a]/g, "").length >= 45;
+}
+
+function getDuaContentKey(dua: Pick<DuaItem, "title" | "arabic">): string {
+  return `${dua.title}\u0000${getPrimaryArabicText(dua.arabic) ?? ""}`;
+}
+
+function findArabicContext(dua: DuaItem): string | null {
+  const candidates = [
+    getArabicReferenceText(dua.reference),
+    getEmbeddedArabicContext(dua.arabic),
+    MANUAL_ARABIC_CONTEXTS[dua.title] || null,
+  ].filter(isSubstantiveArabicContext);
+
+  return candidates.sort((a, b) => b.length - a.length)[0] || null;
+}
+
+const ARABIC_CONTEXT_BY_DUA = new Map<string, string>();
+
+for (const dua of duasFlatData as FlatDuaItem[]) {
+  const context = findArabicContext(dua);
+  if (!context) continue;
+
+  const key = getDuaContentKey(dua);
+  const existing = ARABIC_CONTEXT_BY_DUA.get(key);
+  if (!existing || context.length > existing.length) {
+    ARABIC_CONTEXT_BY_DUA.set(key, context);
+  }
+}
+
+function enrichArabicContent<T extends DuaItem>(dua: T): T {
+  return {
+    ...dua,
+    arabic: getPrimaryArabicText(dua.arabic),
+    context_arabic:
+      ARABIC_CONTEXT_BY_DUA.get(getDuaContentKey(dua)) ||
+      findArabicContext(dua),
+  };
+}
+
+function enrichDua<T extends DuaItem>(dua: T): T {
+  return enrichQuranMetadata(enrichArabicContent(dua));
+}
+
 export function getEmotionArabicName(
   slug: string,
   englishName?: string,
@@ -290,7 +364,7 @@ export function getFeelingsWithGroups(): FeelingGroup[] {
       ...g,
       arabic_name: getEmotionArabicName(g.slug, g.feeling),
       duas: g.duas.map((dua) => ({
-        ...enrichQuranMetadata(dua),
+        ...enrichDua(dua),
         title_arabic: getArabicDuaTitle(
           dua,
           getEmotionArabicName(g.slug, g.feeling),
@@ -316,7 +390,7 @@ export function getFeelingBySlug(
 
 export function getAllDuasFlat(): FlatDuaItem[] {
   return (duasFlatData as FlatDuaItem[]).map((d) => ({
-    ...enrichQuranMetadata(d),
+    ...enrichDua(d),
     arabic_feeling: getEmotionArabicName(d.feeling_slug, d.feeling),
     title_arabic: getArabicDuaTitle(
       d,
@@ -361,6 +435,7 @@ export function getSearchDuas(): SearchDuaItem[] {
       benefit: dua.benefit,
       virtue: dua.virtue,
       hadith: dua.hadith,
+      context_arabic: dua.context_arabic,
       reference: dua.reference,
       source: dua.source,
       quran_reference: dua.quran_reference,

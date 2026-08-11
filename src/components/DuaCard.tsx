@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import {
   BookOpen,
   Check,
   Copy,
   ExternalLink,
   Heart,
+  Image as ImageIcon,
+  Link2,
+  LoaderCircle,
+  MessageSquareText,
   Repeat,
   Share2,
   Volume2,
@@ -24,6 +28,88 @@ interface DuaCardProps {
   onToggleBookmark?: (dua: DuaItem) => void;
 }
 
+function drawRoundedRect(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+) {
+  context.beginPath();
+  context.moveTo(x + radius, y);
+  context.lineTo(x + width - radius, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + radius);
+  context.lineTo(x + width, y + height - radius);
+  context.quadraticCurveTo(
+    x + width,
+    y + height,
+    x + width - radius,
+    y + height,
+  );
+  context.lineTo(x + radius, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - radius);
+  context.lineTo(x, y + radius);
+  context.quadraticCurveTo(x, y, x + radius, y);
+  context.closePath();
+}
+
+function wrapCanvasText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+): string[] {
+  const words = text.trim().split(/\s+/);
+  const lines: string[] = [];
+  let line = '';
+
+  words.forEach((word) => {
+    const candidate = line ? `${line} ${word}` : word;
+    if (line && context.measureText(candidate).width > maxWidth) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = candidate;
+    }
+  });
+
+  if (line) lines.push(line);
+  return lines;
+}
+
+function fitArabicText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  fontFamily: string,
+) {
+  const comfortableLineCount = 15;
+
+  for (let fontSize = 54; fontSize >= 32; fontSize -= 2) {
+    context.font = `400 ${fontSize}px ${fontFamily}`;
+    const lines = wrapCanvasText(context, text, maxWidth);
+    if (lines.length <= comfortableLineCount) {
+      return { fontSize, lines };
+    }
+  }
+
+  context.font = `400 32px ${fontFamily}`;
+  return { fontSize: 32, lines: wrapCanvasText(context, text, maxWidth) };
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('Could not generate the dua image.'));
+    }, 'image/png');
+  });
+}
+
+function wasShareCancelled(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError';
+}
+
 export function DuaCard({
   dua,
   feelingName,
@@ -31,15 +117,25 @@ export function DuaCard({
   isBookmarked = false,
   onToggleBookmark,
 }: DuaCardProps) {
+  const shareOptionsId = useId();
   const [copied, setCopied] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showAudio, setShowAudio] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [shareStatus, setShareStatus] = useState('');
+  const [isCreatingImage, setIsCreatingImage] = useState(false);
 
   useEffect(() => {
     if (!copied) return;
     const timeout = window.setTimeout(() => setCopied(false), 2000);
     return () => window.clearTimeout(timeout);
   }, [copied]);
+
+  useEffect(() => {
+    if (!shareStatus) return;
+    const timeout = window.setTimeout(() => setShareStatus(''), 3500);
+    return () => window.clearTimeout(timeout);
+  }, [shareStatus]);
 
   const relatedFeelings =
     'feelings' in dua && Array.isArray(dua.feelings) ? dua.feelings : [];
@@ -50,14 +146,18 @@ export function DuaCard({
   const arabicReference = formatArabicReference(
     dua.quran_reference || dua.reference,
   );
-  const hasEnglishDetails = Boolean(
+  const hasDetails = Boolean(
     dua.translation ||
       dua.transliteration ||
-      dua.hadith ||
-      dua.virtue ||
-      dua.benefit ||
-      dua.description,
+      dua.context_arabic,
   );
+  const shareText = [
+    `✨ ${arabicTitle}`,
+    dua.arabic,
+    `المصدر: ${arabicReference}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 
   const handleCopy = async () => {
     const text = [
@@ -77,20 +177,142 @@ export function DuaCard({
     }
   };
 
-  const handleShare = async () => {
-    if (!navigator.share) {
-      await handleCopy();
-      return;
+  const handleShareText = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: arabicTitle, text: shareText });
+      } else {
+        await navigator.clipboard.writeText(shareText);
+        setShareStatus('تم نسخ النص، ويمكنك مشاركته الآن.');
+      }
+      setShowShareOptions(false);
+    } catch (error) {
+      if (!wasShareCancelled(error)) {
+        setShareStatus('تعذرت مشاركة النص. حاول نسخه بدلًا من ذلك.');
+      }
     }
+  };
+
+  const handleShareLink = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: arabicTitle, url: duaUrl });
+      } else {
+        await navigator.clipboard.writeText(duaUrl);
+        setShareStatus('تم نسخ الرابط.');
+      }
+      setShowShareOptions(false);
+    } catch (error) {
+      if (!wasShareCancelled(error)) {
+        setShareStatus('تعذر إرسال الرابط.');
+      }
+    }
+  };
+
+  const createDuaImage = async () => {
+    await document.fonts.ready;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1350;
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Canvas is unavailable.');
+
+    const styles = getComputedStyle(document.documentElement);
+    const cairoFont = styles.getPropertyValue('--font-cairo').trim() || 'sans-serif';
+    const amiriFont = styles.getPropertyValue('--font-amiri').trim() || 'serif';
+
+    context.direction = 'rtl';
+    context.font = `700 48px ${cairoFont}`;
+    const titleLines = wrapCanvasText(context, arabicTitle, 840).slice(0, 2);
+    const dividerY = titleLines.length > 1 ? 390 : 325;
+    const fittedText = fitArabicText(context, dua.arabic || '', 810, amiriFont);
+    const lineHeight = fittedText.fontSize * 1.65;
+    const arabicStartY = dividerY + 90;
+    const arabicEndY =
+      arabicStartY + Math.max(0, fittedText.lines.length - 1) * lineHeight;
+    const referenceY = Math.max(1200, arabicEndY + 130);
+    canvas.height = Math.ceil(referenceY + 145);
+
+    context.direction = 'rtl';
+    context.fillStyle = '#FBFAF8';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawRoundedRect(context, 60, 55, 960, canvas.height - 110, 40);
+    context.fillStyle = '#FFFFFF';
+    context.fill();
+    context.strokeStyle = '#E3DCE5';
+    context.lineWidth = 3;
+    context.stroke();
+
+    context.fillStyle = '#CBA1D4';
+    context.fillRect(60, 55, 960, 16);
+
+    drawRoundedRect(context, 744, 105, 216, 64, 32);
+    context.fillStyle = '#FEEB9C';
+    context.fill();
+    context.fillStyle = '#332737';
+    context.font = `700 28px ${cairoFont}`;
+    context.textAlign = 'center';
+    context.fillText('أذكار وأدعية', 852, 147);
+
+    context.textAlign = 'right';
+    context.font = `700 48px ${cairoFont}`;
+    titleLines.forEach((line, index) => {
+      context.fillText(line, 930, 235 + index * 66);
+    });
+
+    context.strokeStyle = '#E3DCE5';
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(130, dividerY);
+    context.lineTo(950, dividerY);
+    context.stroke();
+
+    context.font = `400 ${fittedText.fontSize}px ${amiriFont}`;
+    context.fillStyle = '#332737';
+    fittedText.lines.forEach((line, index) => {
+      context.fillText(line, 930, arabicStartY + index * lineHeight);
+    });
+
+    context.fillStyle = '#CBA1D4';
+    context.fillRect(130, referenceY - 65, 820, 5);
+    context.fillStyle = '#756B78';
+    context.font = `600 28px ${cairoFont}`;
+    context.fillText(arabicReference, 930, referenceY);
+    context.font = `500 24px ${cairoFont}`;
+    context.fillText('أذكار وأدعية حسب شعورك', 930, referenceY + 50);
+
+    return canvasToBlob(canvas);
+  };
+
+  const handleShareImage = async () => {
+    setIsCreatingImage(true);
 
     try {
-      await navigator.share({
-        title: arabicTitle,
-        text: `✨ ${arabicTitle}\n${dua.arabic || ''}`,
-        url: duaUrl,
+      const imageBlob = await createDuaImage();
+      const file = new File([imageBlob], `dua-${targetSlug || 'azkar'}.png`, {
+        type: 'image/png',
       });
-    } catch {
-      // Closing the native share sheet is a normal user action.
+
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ title: arabicTitle, files: [file] });
+      } else {
+        const downloadUrl = URL.createObjectURL(imageBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = downloadUrl;
+        downloadLink.download = file.name;
+        downloadLink.click();
+        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+        setShareStatus('تم تنزيل صورة الذكر.');
+      }
+      setShowShareOptions(false);
+    } catch (error) {
+      if (!wasShareCancelled(error)) {
+        setShareStatus('تعذر إنشاء صورة الذكر.');
+      }
+    } finally {
+      setIsCreatingImage(false);
     }
   };
 
@@ -153,22 +375,22 @@ export function DuaCard({
         </div>
       )}
 
-      {showEnglish && hasEnglishDetails && (
+      {showEnglish && hasDetails && (
         <div className="details-drawer mt-4 space-y-4 p-4 text-sm">
+          {dua.context_arabic && (
+            <section>
+              <h4 className="detail-heading">السياق والفضل</h4>
+              <p lang="ar" dir="rtl" className="detail-copy detail-copy-arabic">
+                {dua.context_arabic}
+              </p>
+            </section>
+          )}
+
           {dua.translation && (
             <section>
               <h4 className="detail-heading">الترجمة الإنجليزية</h4>
               <p dir="ltr" lang="en" className="detail-copy">
                 {dua.translation}
-              </p>
-            </section>
-          )}
-
-          {(dua.hadith || dua.virtue || dua.benefit || dua.description) && (
-            <section>
-              <h4 className="detail-heading">السياق والفضل</h4>
-              <p dir="ltr" lang="en" className="detail-copy">
-                {dua.hadith || dua.virtue || dua.benefit || dua.description}
               </p>
             </section>
           )}
@@ -204,7 +426,7 @@ export function DuaCard({
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-1.5">
-          {hasEnglishDetails && (
+          {hasDetails && (
             <button
               type="button"
               onClick={() => setShowEnglish((visible) => !visible)}
@@ -238,14 +460,54 @@ export function DuaCard({
 
           <button
             type="button"
-            onClick={handleShare}
+            onClick={() => setShowShareOptions((visible) => !visible)}
             className="icon-button"
-            aria-label="مشاركة الذكر"
+            aria-label="خيارات مشاركة الذكر"
+            aria-expanded={showShareOptions}
+            aria-controls={shareOptionsId}
           >
             <Share2 className="h-4 w-4" />
           </button>
         </div>
       </footer>
+
+      {showShareOptions && (
+        <div
+          id={shareOptionsId}
+          className="share-options"
+          role="group"
+          aria-label="اختر طريقة المشاركة"
+        >
+          <button type="button" className="share-option" onClick={handleShareText}>
+            <MessageSquareText className="h-5 w-5" />
+            <span>كنص</span>
+          </button>
+          <button
+            type="button"
+            className="share-option"
+            onClick={handleShareImage}
+            disabled={isCreatingImage}
+            aria-busy={isCreatingImage}
+          >
+            {isCreatingImage ? (
+              <LoaderCircle className="h-5 w-5 animate-spin" />
+            ) : (
+              <ImageIcon className="h-5 w-5" />
+            )}
+            <span>{isCreatingImage ? 'جارٍ الإنشاء' : 'كصورة'}</span>
+          </button>
+          <button type="button" className="share-option" onClick={handleShareLink}>
+            <Link2 className="h-5 w-5" />
+            <span>كرابط</span>
+          </button>
+        </div>
+      )}
+
+      {shareStatus && (
+        <p className="share-status" role="status">
+          {shareStatus}
+        </p>
+      )}
 
       <span className="sr-only" aria-live="polite">
         {copied ? 'تم نسخ الذكر' : ''}
