@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Heart, Search } from 'lucide-react';
+import { useBookmarks } from '@/hooks/useBookmarks';
 
 interface HeaderProps {
   searchQuery?: string;
@@ -10,9 +11,12 @@ interface HeaderProps {
   bookmarkCount?: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange, bookmarkCount = 0 }) => {
+export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange, bookmarkCount }) => {
+  const { bookmarks } = useBookmarks();
+  const visibleBookmarkCount = bookmarkCount ?? bookmarks.length;
+
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/60" style={{ backgroundColor: 'rgba(11,19,41,0.92)' }}>
+    <header className="site-header sticky top-0 z-40 backdrop-blur-md">
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5">
@@ -20,24 +24,25 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
             🤲
           </div>
           <div>
-            <span className="text-base font-bold text-slate-100 block">أذكار وأدعية</span>
-            <span className="text-[10px] text-slate-400 font-medium">حسب الشعور</span>
+            <span className="block text-base font-extrabold">أذكار وأدعية</span>
+            <span className="theme-muted text-[10px] font-semibold">حسب الشعور</span>
           </div>
         </Link>
 
         {/* Search Bar (Desktop) */}
         {onSearchChange && (
           <div className="flex-1 max-w-sm hidden sm:block relative">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="theme-muted absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <label htmlFor="desktop-search" className="sr-only">
+              ابحث عن إحساس أو دعاء
+            </label>
             <input
-              type="text"
+              id="desktop-search"
+              type="search"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="ابحث عن إحساس أو دعاء..."
-              className="w-full bg-slate-900/90 border border-slate-800 rounded-xl pr-9 pl-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
-              style={{ '--tw-ring-color': '#CBA1D4' } as any}
-              onFocus={e => (e.target.style.borderColor = '#CBA1D4')}
-              onBlur={e => (e.target.style.borderColor = '')}
+              className="theme-input w-full rounded-xl py-2 pl-4 pr-9 text-xs"
             />
           </div>
         )}
@@ -45,13 +50,13 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
         {/* Saved Items Link */}
         <Link
           href="/bookmarks"
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+          className="header-action"
         >
-          <Heart className="w-4 h-4 text-rose-400" />
+          <Heart className="h-4 w-4" />
           <span>المحفوظات</span>
-          {bookmarkCount > 0 && (
-            <span className="theme-accent-bg font-bold text-[10px] px-1.5 py-0.5 rounded-full mr-0.5" style={{ color: '#0b1329' }}>
-              {bookmarkCount}
+          {visibleBookmarkCount > 0 && (
+            <span className="bookmark-count">
+              {visibleBookmarkCount}
             </span>
           )}
         </Link>

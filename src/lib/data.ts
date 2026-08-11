@@ -1,7 +1,14 @@
 import feelingsData from "@/data/feelings.json";
 import duasByFeelingData from "@/data/duas_by_feeling.json";
 import duasFlatData from "@/data/duas_flat.json";
-import { FeelingMeta, FeelingGroup, FlatDuaItem, DuaItem } from "@/types";
+import { getArabicDuaTitle } from "@/lib/dua-titles";
+import {
+  FeelingMeta,
+  FeelingGroup,
+  FlatDuaItem,
+  DuaItem,
+  SearchDuaItem,
+} from "@/types";
 
 export const EMOTION_ARABIC_NAMES: Record<string, string> = {
   sad: "حزين",
@@ -244,6 +251,21 @@ export const DEFAULT_THEME = {
   gradient: "from-[#CBA1D4] to-teal-400",
 };
 
+function enrichQuranMetadata<T extends DuaItem>(dua: T): T {
+  if (dua.quran_reference || dua.ayah) return dua;
+
+  const match = dua.translation?.match(/\((\d{1,3}):(\d{1,3})\)/);
+  if (!match) return dua;
+
+  const [, surahNumber, ayahNumber] = match;
+  return {
+    ...dua,
+    quran_reference: `Quran ${surahNumber}:${ayahNumber}`,
+    surah: surahNumber,
+    ayah: Number(ayahNumber),
+  };
+}
+
 export function getEmotionArabicName(
   slug: string,
   englishName?: string,
@@ -255,83 +277,11 @@ export function getEmotionTheme(slug: string) {
   return EMOTION_THEMES[slug.toLowerCase()] || DEFAULT_THEME;
 }
 
-/**
- * Intelligent Arabic title converter to ensure 100% Arabic Dua titles
- */
-export function getArabicDuaTitle(
-  dua: DuaItem,
-  emotionArabicName?: string,
-): string {
-  const t = dua.title || "";
-
-  // If already contains Arabic characters, return as is
-  if (/[\u0600-\u06FF]/.test(t)) {
-    return t;
-  }
-
-  // Common Prophet & Surah title translations
-  let arabicTitle = t
-    .replace(/Duʿa of Prophet Sulayman ﷺ/gi, "دعاء نبي الله سليمان عليه السلام")
-    .replace(/Duʿa of Prophet Yusuf ﷺ/gi, "دعاء نبي الله يوسف عليه السلام")
-    .replace(
-      /Duʿa of Prophet Yunus ﷺ/gi,
-      "دعاء نبي الله يونس عليه السلام (ذو النون)",
-    )
-    .replace(/Duʿa of Prophet Ibrahim ﷺ/gi, "دعاء نبي الله إبراهيم عليه السلام")
-    .replace(/Duʿa of Prophet Musa ﷺ/gi, "دعاء نبي الله موسى عليه السلام")
-    .replace(/Duʿa of Prophet Ayyub ﷺ/gi, "دعاء نبي الله أيوب عليه السلام")
-    .replace(/Duʿa of Prophet Isa ﷺ/gi, "دعاء نبي الله عيسى عليه السلام")
-    .replace(/Duʿa of Prophet Adam ﷺ/gi, "دعاء آدم عليه السلام")
-    .replace(/Duʿa of the Prophet ﷺ/gi, "دعاء النبي ﷺ")
-    .replace(
-      /Surah al-Fatihah: The Greatest Duʿa/gi,
-      "سورة الفاتحة - أعظم دعاء وذِكر",
-    )
-    .replace(
-      /Duʿa for Protection from Sadness & Anxiety/gi,
-      "دعاء الوقاية من الهم والحزن",
-    )
-    .replace(/Duʿa for Protection from/gi, "دعاء الوقاية من")
-    .replace(
-      /Duʿa for Gratitude, Good Deeds & Pious Children/gi,
-      "دعاء الشكر والعمل الصالح والذريّة الطيبة",
-    )
-    .replace(/Duʿa for Gratitude/gi, "دعاء الشكر والحمد")
-    .replace(/Duʿa for A Good Ending/gi, "دعاء حسن الخاتمة")
-    .replace(/Duʿa for Relief from Distress/gi, "دعاء الفرج وكشف الكرب")
-    .replace(/Duʿa for Anxiety & Distress/gi, "دعاء الهم والحزن والكرب")
-    .replace(/Duʿa for Forgiveness/gi, "دعاء الاستغفار وطلب المغفرة")
-    .replace(/Duʿa for Patience/gi, "دعاء طلب الصبر والنزول على الحق")
-    .replace(/Duʿa for Guidance/gi, "دعاء طلب الهداية والتوفيق")
-    .replace(/Duʿa for Strength/gi, "دعاء طلب القوة والثبات")
-    .replace(/Duʿa for Peace/gi, "دعاء طلب السكينة والطمأنينة")
-    .replace(/Duʿa for Decision Making/gi, "دعاء الاستخارة وتيسير الأمور")
-    .replace(/Duʿa for Healing & Health/gi, "دعاء الشفاء والعافية")
-    .replace(/Duʿa for Wealth & Provision/gi, "دعاء سعة الرزق وقضاء الدين")
-    .replace(/Duʿa for Anger/gi, "دعاء تسكين الغضب وتهدئة النفس")
-    .replace(/Duʿa for Fear/gi, "دعاء الأمان وذهاب الخوف")
-    .replace(/Duʿa for Laziness/gi, "دعاء التعوذ من العجز والكسل")
-    .replace(/Duʿa for Loneliness/gi, "دعاء ذهاب الوحشة وتيسير الأنيس")
-    .replace(/Duʿa for/gi, "دعاء")
-    .replace(/Duʿa/gi, "دعاء مبارك")
-    .replace(/for/gi, "في");
-
-  // If after regex it's still pure English, construct a dignified Arabic title
-  if (!/[\u0600-\u06FF]/.test(arabicTitle)) {
-    if (emotionArabicName) {
-      return `دعاء وذِكر عند الشعور بـ (${emotionArabicName})`;
-    }
-    return "دعاء مأثور من السنة والقرآن";
-  }
-
-  return arabicTitle;
-}
-
 export function getAllFeelings(): FeelingMeta[] {
   return (feelingsData as FeelingMeta[]).map((f) => ({
     ...f,
     arabic_name: getEmotionArabicName(f.feeling_slug, f.feeling_name),
-  })) as any[];
+  }));
 }
 
 export function getFeelingsWithGroups(): FeelingGroup[] {
@@ -339,8 +289,15 @@ export function getFeelingsWithGroups(): FeelingGroup[] {
     (g) => ({
       ...g,
       arabic_name: getEmotionArabicName(g.slug, g.feeling),
+      duas: g.duas.map((dua) => ({
+        ...enrichQuranMetadata(dua),
+        title_arabic: getArabicDuaTitle(
+          dua,
+          getEmotionArabicName(g.slug, g.feeling),
+        ),
+      })),
     }),
-  ) as any[];
+  );
 }
 
 export function getFeelingBySlug(
@@ -359,7 +316,64 @@ export function getFeelingBySlug(
 
 export function getAllDuasFlat(): FlatDuaItem[] {
   return (duasFlatData as FlatDuaItem[]).map((d) => ({
-    ...d,
+    ...enrichQuranMetadata(d),
     arabic_feeling: getEmotionArabicName(d.feeling_slug, d.feeling),
-  })) as any[];
+    title_arabic: getArabicDuaTitle(
+      d,
+      getEmotionArabicName(d.feeling_slug, d.feeling),
+    ),
+  }));
+}
+
+export { getArabicDuaTitle } from "@/lib/dua-titles";
+
+/**
+ * Build one client-search record per unique dua and retain its many-to-many
+ * relationship with feelings. This removes repeated search cards and avoids
+ * shipping the nested and flat datasets to the browser.
+ */
+export function getSearchDuas(): SearchDuaItem[] {
+  const uniqueDuas = new Map<string, SearchDuaItem>();
+
+  for (const dua of getAllDuasFlat()) {
+    const key = `${dua.title}\u0000${dua.arabic ?? ""}`;
+    const feeling = {
+      name: dua.feeling,
+      slug: dua.feeling_slug,
+      arabic_name: dua.arabic_feeling || dua.feeling,
+    };
+    const existing = uniqueDuas.get(key);
+
+    if (existing) {
+      if (!existing.feelings.some((item) => item.slug === feeling.slug)) {
+        existing.feelings.push(feeling);
+      }
+      continue;
+    }
+
+    const item: DuaItem = {
+      title: dua.title,
+      title_arabic: dua.title_arabic,
+      arabic: dua.arabic,
+      transliteration: dua.transliteration,
+      translation: dua.translation,
+      description: dua.description,
+      benefit: dua.benefit,
+      virtue: dua.virtue,
+      hadith: dua.hadith,
+      reference: dua.reference,
+      source: dua.source,
+      quran_reference: dua.quran_reference,
+      surah: dua.surah,
+      ayah: dua.ayah,
+      narrator: dua.narrator,
+      repeat_count: dua.repeat_count,
+      audio_url: dua.audio_url,
+      image_url: dua.image_url,
+      source_url: dua.source_url,
+    };
+    uniqueDuas.set(key, { ...item, feelings: [feeling] });
+  }
+
+  return Array.from(uniqueDuas.values());
 }

@@ -1,7 +1,21 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
+import { Amiri, Cairo } from 'next/font/google';
 import './globals.css';
 import { MobileNav } from '@/components/MobileNav';
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
+
+const cairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  variable: '--font-cairo',
+  display: 'swap',
+});
+
+const amiri = Amiri({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '700'],
+  variable: '--font-amiri',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -15,15 +29,22 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: 'ar_SA',
     type: 'website',
+    images: ['/opengraph-image'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'أذكار وأدعية حسب شعورك',
     description: SITE_DESCRIPTION,
+    images: ['/opengraph-image'],
   },
   alternates: {
     canonical: SITE_URL,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#FEEB9C',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({
@@ -32,8 +53,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className="dark">
-      <body className="bg-[#080d1a] text-slate-100 antialiased min-h-screen flex flex-col justify-between radial-bg pb-20 md:pb-0">
+    <html lang="ar" dir="rtl" className={`${cairo.variable} ${amiri.variable}`}>
+      <body className="min-h-screen pb-20 antialiased md:pb-0">
         {children}
         <MobileNav />
       </body>

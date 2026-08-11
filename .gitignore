@@ -1,6 +1,8 @@
 # Next.js
 .next/
 out/
+*.tsbuildinfo
+coverage/
 
 # Node modules
 node_modules/
@@ -17,3 +19,10 @@ node_modules/
 # OS generated
 .DS_Store
 Thumbs.db
+
+# Scraper runtime artifacts
+__pycache__/
+*.py[cod]
+dua_scraper/output/checkpoint.json
+dua_scraper/output/errors/
+dua_scraper/output/raw/

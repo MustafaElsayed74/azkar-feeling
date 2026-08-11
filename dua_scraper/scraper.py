@@ -8,8 +8,7 @@ import random
 import argparse
 import asyncio
 from datetime import datetime
-from urllib.parse import urlparse
-import requests
+from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
@@ -27,6 +26,13 @@ ERRORS_DIR = os.path.join(OUTPUT_DIR, "errors")
 for d in [OUTPUT_DIR, RAW_DIR, ERRORS_DIR]:
     os.makedirs(d, exist_ok=True)
 
+def write_json_atomic(path, data):
+    """Write checkpoints atomically so an interrupted run cannot corrupt them."""
+    temporary_path = f"{path}.tmp"
+    with open(temporary_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    os.replace(temporary_path, path)
+
 def is_arabic(text):
     if not text:
         return False
@@ -39,7 +45,12 @@ def is_arabic(text):
 def extract_quran_details(text):
     if not text:
         return None, None, None
-    m = re.search(r'(?:Quran|Qur\'an|Surah)\s*([A-Za-z0-9\-\'\s]+)?\s*\(?(\d+):(\d+)\)?', text, re.IGNORECASE)
+    m = re.search(
+        r'(?:Quran|Qur[\'’ʾ]?an|S[uū]rah)\s*'
+        r'([A-Za-zÀ-ž\-\'’\s]+?)?\s*\(?(\d{1,3})\s*:\s*(\d{1,3})\)?',
+        text,
+        re.IGNORECASE,
+    )
     if m:
         quran_ref = m.group(0).strip()
         surah = m.group(1).strip() if m.group(1) and not m.group(1).strip().isdigit() else None
@@ -49,6 +60,12 @@ def extract_quran_details(text):
         except:
             pass
         return quran_ref, surah, ayah
+
+    numeric_ref = re.search(r'\((\d{1,3})\s*:\s*(\d{1,3})\)', text)
+    if numeric_ref:
+        surah_number = numeric_ref.group(1)
+        ayah = int(numeric_ref.group(2))
+        return f"Quran {surah_number}:{ayah}", surah_number, ayah
     return None, None, None
 
 def parse_dua_page(html_content, page_url):
@@ -300,12 +317,17 @@ async def discover_feelings(page):
     feelings = []
     seen_slugs = set()
 
-    for a in soup.find_all('a', href=True):
-        href = a['href']
+    discovery_root = soup.find('div', class_='entry-content') or soup.find('main') or soup
+
+    for a in discovery_root.find_all('a', href=True):
+        href = urljoin(MAIN_URL, a['href'])
+        parsed = urlparse(href)
+        if parsed.netloc != urlparse(BASE_DOMAIN).netloc:
+            continue
         path = urlparse(href).path.strip('/')
         if not path or path in ['99-names-of-allah', 'daily-duas-and-dhikr', 'i-am-feeling', 'quran-images', 'support-our-mission', 'feed', 'comments', 'contact', 'privacy-policy', 'about']:
             continue
-        if href.startswith('https://allahuakbarofficial.com/') and path:
+        if path:
             text = a.get_text(strip=True)
             img = a.find('img')
             img_alt = img.get('alt', '') if img else ''
@@ -338,6 +360,9 @@ async def scrape_feeling_page(context, feeling, retries=3):
             await asyncio.sleep(random.uniform(0.3, 1.2))
 
             response = await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            if response is None or not response.ok:
+                status = response.status if response else 'no response'
+                raise RuntimeError(f"HTTP navigation failed with status: {status}")
 
             # Check bot verification / cloudflare
             content = await page.content()
@@ -345,6 +370,8 @@ async def scrape_feeling_page(context, feeling, retries=3):
                 print(f"[WARN] Bot verification detected for {slug}, waiting...")
                 await asyncio.sleep(3)
                 content = await page.content()
+                if any(term in content for term in ["Verify you are human", "Access denied", "Just a moment"]):
+                    raise RuntimeError("Bot verification remained active after waiting")
 
             # Expand accordions if present
             accordions = await page.query_selector_all(".elementor-accordion-title, .accordion-title, details, summary")
@@ -423,6 +450,7 @@ async def main():
 
         # Step 1: Discover feelings
         feelings = await discover_feelings(page)
+        feelings_discovered_count = len(feelings)
         await page.close()
 
         # Save feelings.json
@@ -455,12 +483,14 @@ async def main():
                         "items_count": len(duas),
                         "duas": duas
                     }
-                    # Save checkpoint incrementally
-                    with open(checkpoint_file, 'w', encoding='utf-8') as f:
-                        json.dump({
-                            "scraped_feelings": scraped_feelings_dict,
-                            "failed_pages": failed_pages
-                        }, f, ensure_ascii=False, indent=2)
+                    failed_pages[:] = [
+                        failure for failure in failed_pages
+                        if failure.get('url') != feeling['feeling_url']
+                    ]
+                    write_json_atomic(checkpoint_file, {
+                        "scraped_feelings": scraped_feelings_dict,
+                        "failed_pages": failed_pages
+                    })
                 else:
                     failed_pages.append({
                         "url": feeling['feeling_url'],
@@ -483,7 +513,7 @@ async def main():
     total_arabic = 0
     with_ref = 0
     with_audio = 0
-    duplicates_removed = 0
+    unique_dua_keys = set()
 
     for slug, fdata in scraped_feelings_dict.items():
         feelings_nested.append(fdata)
@@ -519,6 +549,7 @@ async def main():
                 "source_url": d['source_url']
             }
             all_flat_duas.append(flat_item)
+            unique_dua_keys.add((d['title'], (d['arabic'] or '').strip()))
 
     # Save duas_by_feeling.json
     by_feeling_dataset = {
@@ -554,14 +585,15 @@ async def main():
         "started_at": start_time.isoformat(),
         "finished_at": end_time.isoformat(),
         "duration_seconds": round(duration, 2),
-        "feelings_discovered": len(feelings),
+        "feelings_discovered": feelings_discovered_count,
         "feelings_scraped_successfully": len(scraped_feelings_dict),
         "feelings_failed": len(failed_pages),
         "total_duas": total_duas,
         "total_arabic_entries": total_arabic,
         "entries_with_reference": with_ref,
         "entries_with_audio": with_audio,
-        "duplicate_entries_removed": duplicates_removed
+        "unique_duas": len(unique_dua_keys),
+        "repeated_feeling_associations": total_duas - len(unique_dua_keys)
     }
     with open(os.path.join(OUTPUT_DIR, "scrape_report.json"), 'w', encoding='utf-8') as f:
         json.dump(report_data, f, ensure_ascii=False, indent=2)
@@ -569,7 +601,7 @@ async def main():
     print("\n=========================================")
     print("SCRAPE COMPLETE")
     print("=========================================")
-    print(f"Feelings discovered: {len(feelings)}")
+    print(f"Feelings discovered: {feelings_discovered_count}")
     print(f"Feelings successful: {len(scraped_feelings_dict)}")
     print(f"Feelings failed: {len(failed_pages)}")
     print(f"Total entries: {total_duas}")

@@ -1,5 +1,7 @@
 export interface DuaItem {
   title: string;
+  title_arabic?: string;
+  feeling_slug?: string;
   arabic: string | null;
   transliteration: string | null;
   translation: string | null;
@@ -41,4 +43,14 @@ export interface FlatDuaItem extends DuaItem {
   feeling: string;
   feeling_slug: string;
   arabic_feeling?: string;
+}
+
+export interface SearchFeeling {
+  name: string;
+  slug: string;
+  arabic_name: string;
+}
+
+export interface SearchDuaItem extends DuaItem {
+  feelings: SearchFeeling[];
 }

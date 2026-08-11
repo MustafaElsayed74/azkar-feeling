@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { DuaListClient } from '@/components/DuaListClient';
+import { CrisisSupport } from '@/components/CrisisSupport';
 import { getFeelingBySlug, getFeelingsWithGroups, getEmotionTheme } from '@/lib/data';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
@@ -15,23 +16,28 @@ export function generateStaticParams() {
 }
 
 interface FeelingPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: FeelingPageProps) {
-  const group = getFeelingBySlug(params.slug);
+  const { slug } = await params;
+  const group = getFeelingBySlug(slug);
   if (!group) return { title: 'الشعور غير موجود' };
 
   return {
     title: `أدعية وأذكار عند الشعور بـ (${group.arabic_name}) | أذكار وأدعية`,
     description: `الأدعية والأذكار النبوية المستحبة عند الشعور بـ (${group.arabic_name}) من القرآن الكريم والسنة المطهرة.`,
+    alternates: {
+      canonical: `/feeling/${group.slug}`,
+    },
   };
 }
 
-export default function FeelingPage({ params }: FeelingPageProps) {
-  const group = getFeelingBySlug(params.slug);
+export default async function FeelingPage({ params }: FeelingPageProps) {
+  const { slug } = await params;
+  const group = getFeelingBySlug(slug);
   if (!group) {
     notFound();
   }
@@ -43,51 +49,53 @@ export default function FeelingPage({ params }: FeelingPageProps) {
   const nextGroup = currentIndex < allGroups.length - 1 ? allGroups[currentIndex + 1] : null;
 
   return (
-    <div className="flex flex-col min-h-screen dir-rtl bg-[#0b1329]">
+    <div className="app-shell flex min-h-screen flex-col">
       <Header />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8">
         {/* Back Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-[#CBA1D4] transition-colors mb-4"
+          className="back-link mb-4"
         >
           <ArrowRight className="w-4 h-4" />
           <span>الرجوع لجميع المشاعر</span>
         </Link>
 
         {/* Minimal Category Header */}
-        <div className="clean-card p-5 sm:p-6 mb-6 flex items-center justify-between gap-4">
+        <div className="hero-panel mb-6 flex items-center justify-between gap-4 p-5 sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-2xl shrink-0">
+            <div className="theme-icon-wrap h-12 w-12 shrink-0 rounded-2xl text-2xl">
               {theme.emoji}
             </div>
             <div>
-              <span className="text-[11px] font-medium text-[#CBA1D4] block">
+              <span className="feeling-label block text-[11px] font-bold">
                 أدعية وأذكار عند
               </span>
-              <h1 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
+              <h1 className="mt-0.5 text-xl font-extrabold sm:text-2xl">
                 {group.arabic_name}
               </h1>
             </div>
           </div>
 
-          <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
+          <span className="theme-badge rounded-xl px-3 py-1 text-xs font-bold">
             {group.items_count} {group.items_count === 1 ? 'دعاء' : 'أدعية'}
           </span>
         </div>
+
+        {group.slug === 'suicidal' && <CrisisSupport />}
 
         {/* Duas List */}
         <DuaListClient group={group} />
 
         {/* Pagination */}
-        <div className="flex items-center justify-between gap-4 mt-8 pt-4 border-t border-slate-800/60 text-xs">
+        <div className="divider mt-8 flex items-center justify-between gap-4 pt-4 text-xs">
           {prevGroup ? (
             <Link
               href={`/feeling/${prevGroup.slug}`}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl clean-card text-slate-300 hover:text-white"
+              className="pagination-link"
             >
-              <ArrowRight className="w-3.5 h-3.5 text-[#CBA1D4]" />
+              <ArrowRight className="h-3.5 w-3.5" />
               <span>{prevGroup.arabic_name || prevGroup.feeling}</span>
             </Link>
           ) : <div />}
@@ -95,10 +103,10 @@ export default function FeelingPage({ params }: FeelingPageProps) {
           {nextGroup && (
             <Link
               href={`/feeling/${nextGroup.slug}`}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl clean-card text-slate-300 hover:text-white"
+              className="pagination-link"
             >
               <span>{nextGroup.arabic_name || nextGroup.feeling}</span>
-              <ArrowLeft className="w-3.5 h-3.5 text-[#CBA1D4]" />
+              <ArrowLeft className="h-3.5 w-3.5" />
             </Link>
           )}
         </div>

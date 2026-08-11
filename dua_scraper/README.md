@@ -70,6 +70,16 @@ Scrape only a specific feeling (e.g. `sad`):
 python scraper.py --only sad
 ```
 
+After reviewing a successful scrape, validate and copy the three frontend JSON
+files into `src/data`:
+
+```bash
+python sync_frontend_data.py
+```
+
+Then run `npm test` from the repository root. The sync command validates that
+every copied file contains valid JSON before replacing the frontend copy.
+
 ## Output Datasets
 
 - `output/feelings.json`: Metadata of all discovered feelings.

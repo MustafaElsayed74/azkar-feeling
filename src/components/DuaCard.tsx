@@ -1,10 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Copy, Check, Heart, Volume2, Share2, Repeat, BookOpen } from 'lucide-react';
-import { DuaItem } from '@/types';
+import { useEffect, useState } from 'react';
+import {
+  BookOpen,
+  Check,
+  Copy,
+  ExternalLink,
+  Heart,
+  Repeat,
+  Share2,
+  Volume2,
+} from 'lucide-react';
+import type { DuaItem } from '@/types';
 import { SITE_URL } from '@/lib/constants';
-import { getArabicDuaTitle } from '@/lib/data';
+import { getArabicDuaTitle } from '@/lib/dua-titles';
+import { formatArabicReference } from '@/lib/references';
 
 interface DuaCardProps {
   dua: DuaItem;
@@ -14,206 +24,232 @@ interface DuaCardProps {
   onToggleBookmark?: (dua: DuaItem) => void;
 }
 
-/**
- * Format English reference string into dignified Arabic reference
- */
-function formatArabicReference(ref: string | null): string {
-  if (!ref) return 'من الأذكار المأثورة';
-
-  return ref
-    .replace(/Nasā'ī\s*(\d+)/gi, 'سنن النسائي (رقم $1)')
-    .replace(/Bukhārī\s*(\d+)/gi, 'صحيح البخاري (رقم $1)')
-    .replace(/Muslim\s*(\d+)/gi, 'صحيح مسلم (رقم $1)')
-    .replace(/Tirmidhī\s*(\d+)/gi, 'سنن الترمذي (رقم $1)')
-    .replace(/Abū Dāwūd\s*(\d+)/gi, 'سنن أبي داود (رقم $1)')
-    .replace(/Aḥmad\s*(\d+)/gi, 'مسند الإمام أحمد (رقم $1)')
-    .replace(/Ibn Mājah\s*(\d+)/gi, 'سنن ابن ماجه (رقم $1)')
-    .replace(/\((\d+):(\d+)\)/g, 'سورة رقم $1 - الآية $2');
-}
-
-export const DuaCard: React.FC<DuaCardProps> = ({
+export function DuaCard({
   dua,
   feelingName,
   feelingSlug,
   isBookmarked = false,
   onToggleBookmark,
-}) => {
+}: DuaCardProps) {
   const [copied, setCopied] = useState(false);
-  const [saved, setSaved] = useState(isBookmarked);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showAudio, setShowAudio] = useState(false);
 
   useEffect(() => {
-    setSaved(isBookmarked);
-  }, [isBookmarked]);
+    if (!copied) return;
+    const timeout = window.setTimeout(() => setCopied(false), 2000);
+    return () => window.clearTimeout(timeout);
+  }, [copied]);
 
-  const targetSlug = feelingSlug || (dua as any).feeling_slug;
+  const relatedFeelings =
+    'feelings' in dua && Array.isArray(dua.feelings) ? dua.feelings : [];
+  const embeddedSlug = dua.feeling_slug || relatedFeelings[0]?.slug;
+  const targetSlug = feelingSlug || embeddedSlug;
   const duaUrl = targetSlug ? `${SITE_URL}/feeling/${targetSlug}` : SITE_URL;
   const arabicTitle = getArabicDuaTitle(dua, feelingName);
-  const arabicRef = formatArabicReference(dua.quran_reference || dua.reference);
+  const arabicReference = formatArabicReference(
+    dua.quran_reference || dua.reference,
+  );
+  const hasEnglishDetails = Boolean(
+    dua.translation ||
+      dua.transliteration ||
+      dua.hadith ||
+      dua.virtue ||
+      dua.benefit ||
+      dua.description,
+  );
 
-  const handleCopy = () => {
-    const textToCopy = `✨ ${arabicTitle}\n\n${dua.arabic || ''}\n\nالمصدر: ${arabicRef}\nرابط الذكر: ${duaUrl}`;
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const handleCopy = async () => {
+    const text = [
+      `✨ ${arabicTitle}`,
+      dua.arabic,
+      `المصدر: ${arabicReference}`,
+      `رابط الذكر: ${duaUrl}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: arabicTitle,
-        text: `✨ ${arabicTitle}\n${dua.arabic || ''}`,
-        url: duaUrl,
-      }).catch(() => {});
-    } else {
-      handleCopy();
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+    } catch {
+      setCopied(false);
     }
   };
 
-  const hasEnglishDetails = dua.translation || dua.transliteration || dua.hadith || dua.virtue || dua.benefit || dua.description;
+  const handleShare = async () => {
+    if (!navigator.share) {
+      await handleCopy();
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: arabicTitle,
+        text: `✨ ${arabicTitle}\n${dua.arabic || ''}`,
+        url: duaUrl,
+      });
+    } catch {
+      // Closing the native share sheet is a normal user action.
+    }
+  };
 
   return (
-    <div className="clean-card p-5 sm:p-7 relative border border-slate-800/80 bg-[#111a33] text-right dir-rtl">
-      {/* Top Header: Arabic Title & Controls */}
-      <div className="flex items-start justify-between gap-3 pb-3 mb-4 border-b border-slate-800/60">
+    <article className="dua-card clean-card relative p-5 text-right sm:p-7">
+      <header className="divider mb-4 flex items-start justify-between gap-3 pb-4">
         <div>
-          <h3 className="text-base sm:text-lg font-bold text-slate-100 leading-snug">
+          <h3 className="text-lg font-extrabold leading-8 sm:text-xl">
             {arabicTitle}
           </h3>
           {feelingName && (
-            <span className="text-[11px] text-[#CBA1D4] font-semibold block mt-0.5">
+            <span className="feeling-label mt-1 block text-xs font-bold">
               الشعور: {feelingName}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           {dua.repeat_count && (
-            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center gap-1">
-              <Repeat className="w-3 h-3" />
+            <span className="repeat-badge">
+              <Repeat className="h-3.5 w-3.5" />
               <span>{dua.repeat_count} مرات</span>
             </span>
           )}
 
           {onToggleBookmark && (
             <button
-              onClick={() => {
-                setSaved(!saved);
-                onToggleBookmark(dua);
-              }}
-              className={`p-1.5 rounded-lg border transition-colors ${
-                saved
-                  ? 'bg-rose-500/15 border-rose-500/30 text-rose-400'
-                  : 'border-slate-800 text-slate-400 hover:text-rose-400'
-              }`}
-              title={saved ? 'إزالة من المحفوظات' : 'حفظ في المحفوظات'}
+              type="button"
+              onClick={() =>
+                onToggleBookmark(
+                  targetSlug ? { ...dua, feeling_slug: targetSlug } : dua,
+                )
+              }
+              className={`icon-button ${isBookmarked ? 'is-bookmarked' : ''}`}
+              aria-label={
+                isBookmarked ? 'إزالة من المحفوظات' : 'حفظ في المحفوظات'
+              }
+              aria-pressed={isBookmarked}
             >
-              <Heart className={`w-4 h-4 ${saved ? 'fill-rose-400' : ''}`} />
+              <Heart className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
             </button>
           )}
         </div>
-      </div>
+      </header>
 
-      {/* Pure Arabic Text Box */}
       {dua.arabic && (
-        <div className="py-4 my-2 text-right">
-          <p className="font-arabic text-2xl sm:text-3xl text-[#CBA1D4] leading-loose tracking-wide select-all">
+        <div className="dua-arabic-box my-3 px-4 py-5 sm:px-6">
+          <p className="font-arabic select-all text-2xl leading-loose sm:text-3xl">
             {dua.arabic}
           </p>
         </div>
       )}
 
-      {/* Audio Player (if active) */}
       {showAudio && dua.audio_url && (
-        <div className="my-3 p-2.5 bg-slate-900/90 rounded-xl border border-slate-800">
-          <audio controls autoPlay className="w-full h-8 accent-[#CBA1D4]">
+        <div className="details-drawer my-4 p-3">
+          <audio controls autoPlay className="h-9 w-full">
             <source src={dua.audio_url} />
             المتصفح لا يدعم التشغيل الصوتي.
           </audio>
         </div>
       )}
 
-      {/* Optional English Translation / Transliteration Drawer (Hidden by default for 100% Arabic purity) */}
       {showEnglish && hasEnglishDetails && (
-        <div className="mt-4 pt-4 border-t border-slate-800/60 space-y-3 text-xs text-slate-300">
+        <div className="details-drawer mt-4 space-y-4 p-4 text-sm">
           {dua.translation && (
-            <div>
-              <span className="font-bold text-[#CBA1D4] block mb-1">الترجمة الإنجليزية (English Translation):</span>
-              <p className="text-slate-300 font-sans dir-ltr text-left bg-slate-900/50 p-3 rounded-lg border border-slate-800 leading-relaxed">
+            <section>
+              <h4 className="detail-heading">الترجمة الإنجليزية</h4>
+              <p dir="ltr" lang="en" className="detail-copy">
                 {dua.translation}
               </p>
-            </div>
+            </section>
           )}
 
           {(dua.hadith || dua.virtue || dua.benefit || dua.description) && (
-            <div>
-              <span className="font-bold text-amber-300 block mb-1">سبب الورود والفضل (Hadith & Context):</span>
-              <p className="text-slate-300 font-sans dir-ltr text-left bg-slate-900/50 p-3 rounded-lg border border-slate-800 leading-relaxed">
+            <section>
+              <h4 className="detail-heading">السياق والفضل</h4>
+              <p dir="ltr" lang="en" className="detail-copy">
                 {dua.hadith || dua.virtue || dua.benefit || dua.description}
               </p>
-            </div>
+            </section>
           )}
 
           {dua.transliteration && (
-            <div>
-              <span className="font-bold text-slate-400 block mb-1">النطق الصوتي (Transliteration):</span>
-              <p className="text-slate-400 font-sans italic dir-ltr text-left bg-slate-900/40 p-3 rounded-lg border border-slate-800/60">
+            <section>
+              <h4 className="detail-heading">النطق بالحروف اللاتينية</h4>
+              <p dir="ltr" lang="en" className="detail-copy italic">
                 {dua.transliteration}
               </p>
-            </div>
+            </section>
           )}
         </div>
       )}
 
-      {/* Bottom Footer Toolbar */}
-      <div className="mt-5 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
-        {/* Arabic Reference */}
-        <div className="flex items-center gap-1.5 text-slate-300">
-          <BookOpen className="w-3.5 h-3.5 text-[#CBA1D4] shrink-0" />
-          <span className="font-semibold text-[11px] truncate max-w-[200px] sm:max-w-xs">
-            {arabicRef}
-          </span>
+      <footer className="divider mt-5 flex flex-wrap items-center justify-between gap-3 pt-4 text-xs">
+        <div className="min-w-0 flex-1">
+          <div className="reference-label flex items-center gap-1.5">
+            <BookOpen className="h-4 w-4 shrink-0" />
+            <span className="truncate font-bold">{arabicReference}</span>
+          </div>
+          {dua.source_url && (
+            <a
+              href={dua.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="source-link mt-1.5 inline-flex items-center gap-1"
+            >
+              <ExternalLink className="h-3 w-3" />
+              <span>عرض المصدر الأصلي</span>
+            </a>
+          )}
         </div>
 
-        {/* Action Control Buttons */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
           {hasEnglishDetails && (
             <button
-              onClick={() => setShowEnglish(!showEnglish)}
-              className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
+              type="button"
+              onClick={() => setShowEnglish((visible) => !visible)}
+              className="secondary-button compact"
+              aria-expanded={showEnglish}
             >
-              {showEnglish ? 'إخفاء الإنجليزية' : 'English / الترجمة'}
+              {showEnglish ? 'إخفاء الترجمة' : 'الترجمة والسياق'}
             </button>
           )}
 
           {dua.audio_url && (
             <button
-              onClick={() => setShowAudio(!showAudio)}
-              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-[#CBA1D4] transition-colors"
-              title="تلاوة صوتية"
+              type="button"
+              onClick={() => setShowAudio((visible) => !visible)}
+              className="icon-button"
+              aria-label={showAudio ? 'إخفاء التلاوة' : 'تشغيل التلاوة'}
+              aria-pressed={showAudio}
             >
-              <Volume2 className="w-3.5 h-3.5" />
+              <Volume2 className="h-4 w-4" />
             </button>
           )}
 
           <button
+            type="button"
             onClick={handleCopy}
-            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors"
-            title="نسخ الذكر"
+            className="icon-button"
+            aria-label={copied ? 'تم نسخ الذكر' : 'نسخ الذكر'}
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-[#CBA1D4]" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
           </button>
 
           <button
+            type="button"
             onClick={handleShare}
-            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors"
-            title="مشاركة"
+            className="icon-button"
+            aria-label="مشاركة الذكر"
           >
-            <Share2 className="w-3.5 h-3.5" />
+            <Share2 className="h-4 w-4" />
           </button>
         </div>
-      </div>
-    </div>
+      </footer>
+
+      <span className="sr-only" aria-live="polite">
+        {copied ? 'تم نسخ الذكر' : ''}
+      </span>
+    </article>
   );
-};
+}

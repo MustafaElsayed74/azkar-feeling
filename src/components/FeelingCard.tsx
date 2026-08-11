@@ -2,15 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { getEmotionArabicName } from '@/lib/data';
 import {
   CloudRain, Zap, Flame, Moon, CloudDrizzle, Heart, Sun, HelpCircle,
   ShieldAlert, Shield, Clock, ThumbsUp, CheckCircle2, Search,
   Coins, XCircle, Activity, Scale, UserX, EyeOff, Battery,
   Map, ActivitySquare, AlertTriangle, Droplet, Coffee, Frown, Mountain, Smile
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   sad: CloudRain, anxious: Zap, angry: Flame, lonely: Moon,
   depressed: CloudDrizzle, grateful: Heart, happy: Sun, confused: HelpCircle,
   scared: ShieldAlert, suicidal: Shield, bored: Clock, confident: ThumbsUp,
@@ -20,14 +20,27 @@ const iconMap: Record<string, any> = {
   regret: Droplet, tired: Coffee, unloved: Frown, weak: Mountain,
 };
 
-interface FeelingCardProps { name: string; slug: string; count: number; }
+interface FeelingCardProps {
+  name: string;
+  arabicName: string;
+  slug: string;
+  count: number;
+}
 
-export const FeelingCard: React.FC<FeelingCardProps> = ({ name, slug, count }) => {
-  const arabicName = getEmotionArabicName(slug, name);
+export const FeelingCard: React.FC<FeelingCardProps> = ({
+  name,
+  arabicName,
+  slug,
+  count,
+}) => {
   const Icon = iconMap[slug.toLowerCase()] || Smile;
 
   return (
-    <Link href={`/feeling/${slug}`} className="block h-full">
+    <Link
+      href={`/feeling/${slug}`}
+      className="block h-full"
+      aria-label={`${arabicName} — ${count} دعاء (${name})`}
+    >
       <div className="theme-card relative overflow-hidden h-full p-4 sm:p-5">
         <div className="theme-orb" />
         <div className="flex flex-col h-full justify-between relative z-10 gap-4">
@@ -40,10 +53,10 @@ export const FeelingCard: React.FC<FeelingCardProps> = ({ name, slug, count }) =
             </span>
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-bold text-slate-100 mb-1">
+            <h3 className="mb-1 text-sm font-extrabold sm:text-base">
               {arabicName}
             </h3>
-            <p className="text-[10px] sm:text-xs text-slate-400">أذكار مخصصة للقلب</p>
+            <p className="theme-muted text-[10px] sm:text-xs">أذكار مخصصة للقلب</p>
           </div>
         </div>
       </div>
