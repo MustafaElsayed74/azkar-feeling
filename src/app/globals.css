@@ -5,9 +5,13 @@
 :root {
   --lavender: #cba1d4;
   --butter: #feeb9c;
-  --ink: #392b3d;
-  --muted: #392b3d;
-  --border: #392b3d;
+  --canvas: #fbfaf8;
+  --surface: #ffffff;
+  --surface-soft: #f6f3f6;
+  --ink: #332737;
+  --muted: #756b78;
+  --border: #e3dce5;
+  --shadow: 0 12px 32px rgba(51, 39, 55, 0.08);
 }
 
 * {
@@ -15,14 +19,14 @@
 }
 
 html {
-  background: var(--butter);
+  background: var(--canvas);
 }
 
 body {
   min-height: 100vh;
   margin: 0;
   color: var(--ink);
-  background: var(--butter);
+  background: var(--canvas);
   font-family: var(--font-cairo), system-ui, sans-serif;
   direction: rtl;
   -webkit-tap-highlight-color: transparent;
@@ -50,17 +54,16 @@ input {
 
 .theme-muted {
   color: var(--muted);
-  opacity: 0.72;
 }
 
 .site-header {
   border-bottom: 1px solid var(--border);
-  background: var(--butter);
+  background: var(--surface);
 }
 
 .site-footer {
   color: var(--ink);
-  border-top: 1px solid var(--border);
+  border-top: 0;
   background: var(--lavender);
 }
 
@@ -79,14 +82,14 @@ input {
   padding: 0.45rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 0.85rem;
-  background: var(--butter);
+  background: var(--surface);
   font-size: 0.75rem;
 }
 
 .header-action:hover,
 .pagination-link:hover {
-  border-color: var(--ink);
-  background: var(--lavender);
+  border-color: var(--lavender);
+  background: var(--butter);
   transform: translateY(-1px);
 }
 
@@ -95,8 +98,8 @@ input {
   margin-right: 0.125rem;
   padding: 0.1rem 0.35rem;
   color: var(--ink);
-  background: var(--lavender);
-  border: 1px solid var(--border);
+  background: var(--butter);
+  border: 0;
   border-radius: 9999px;
   font-size: 0.625rem;
   font-weight: 800;
@@ -107,7 +110,7 @@ input {
   color: var(--ink);
   border: 1px solid var(--border);
   outline: none;
-  background: var(--butter);
+  background: var(--surface);
 }
 
 .theme-input::placeholder {
@@ -116,22 +119,24 @@ input {
 }
 
 .theme-input:focus {
-  border-color: var(--ink);
+  border-color: var(--lavender);
   box-shadow: 0 0 0 3px var(--lavender);
 }
 
 .hero-panel {
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 1.75rem;
-  background: var(--lavender);
+  border-top: 5px solid var(--lavender);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .hero-kicker {
   display: inline-flex;
   padding: 0.35rem 0.75rem;
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: 9999px;
   background: var(--butter);
   font-size: 0.72rem;
@@ -142,13 +147,13 @@ input {
   padding: 0.45rem 0.8rem;
   border: 1px solid var(--border);
   border-radius: 9999px;
-  background: var(--butter);
+  background: var(--surface-soft);
   font-size: 0.75rem;
   white-space: nowrap;
 }
 
 .filter-pill:hover {
-  border-color: var(--ink);
+  border-color: var(--lavender);
   background: var(--butter);
   transform: translateY(-1px);
 }
@@ -157,7 +162,7 @@ input {
   width: 0.48rem;
   height: 0.48rem;
   border-radius: 9999px;
-  background: var(--ink);
+  background: var(--lavender);
 }
 
 .section-heading {
@@ -185,23 +190,26 @@ input {
 .glass-card {
   color: var(--ink);
   border: 1px solid var(--border);
-  background: var(--lavender);
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .theme-card {
   min-height: 9.5rem;
-  border-radius: 1.25rem;
+  border-top: 4px solid var(--lavender);
+  border-radius: 1rem;
 }
 
 .theme-card:hover,
 .clean-card:hover {
-  border-color: var(--ink);
+  border-color: var(--lavender);
+  box-shadow: 0 16px 38px rgba(51, 39, 55, 0.12);
   transform: translateY(-2px);
 }
 
 .clean-card,
 .glass-card {
-  border-radius: 1.5rem;
+  border-radius: 1.25rem;
 }
 
 .theme-orb {
@@ -215,7 +223,7 @@ input {
   width: 2.5rem;
   height: 2.5rem;
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: 9999px;
   background: var(--butter);
 }
@@ -223,7 +231,7 @@ input {
 .theme-badge,
 .repeat-badge {
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 0;
   background: var(--butter);
 }
 
@@ -256,7 +264,7 @@ div.divider {
 
 .feeling-label,
 .reference-label {
-  color: var(--ink);
+  color: var(--muted);
 }
 
 .dua-card:hover {
@@ -266,8 +274,9 @@ div.divider {
 .dua-arabic-box {
   color: var(--ink);
   border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  background: var(--butter);
+  border-right: 5px solid var(--butter);
+  border-radius: 1rem;
+  background: var(--surface-soft);
 }
 
 .font-arabic {
@@ -280,7 +289,7 @@ div.divider {
 .detail-copy {
   border: 1px solid var(--border);
   border-radius: 1rem;
-  background: var(--butter);
+  background: var(--surface-soft);
 }
 
 .detail-heading {
@@ -313,7 +322,7 @@ div.divider {
 .secondary-button {
   color: var(--ink);
   border: 1px solid var(--border);
-  background: var(--butter);
+  background: var(--surface);
 }
 
 .icon-button {
@@ -331,8 +340,8 @@ div.divider {
 .icon-button.is-bookmarked {
   color: var(--ink);
   border-color: var(--ink);
-  background: var(--butter);
-  box-shadow: inset 0 0 0 2px var(--ink);
+  background: var(--lavender);
+  box-shadow: none;
 }
 
 .secondary-button {
@@ -360,7 +369,7 @@ div.divider {
   padding: 0.55rem 0.8rem;
   color: var(--ink);
   border: 1px solid var(--border);
-  background: var(--butter);
+  background: var(--surface);
   font-size: 0.75rem;
 }
 
@@ -387,7 +396,7 @@ div.divider {
   padding: 0.6rem 0.8rem;
   border: 1px solid var(--border);
   border-radius: 0.9rem;
-  background: var(--butter);
+  background: var(--surface);
 }
 
 .heart-icon-wrap,
@@ -413,7 +422,8 @@ div.divider {
 .mobile-nav {
   color: var(--muted);
   border-top: 1px solid var(--border);
-  background: var(--butter);
+  background: var(--surface);
+  box-shadow: 0 -8px 24px rgba(51, 39, 55, 0.08);
 }
 
 .mobile-nav-link {
@@ -428,15 +438,16 @@ div.divider {
 
 .mobile-nav-link.is-active {
   color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
+  position: relative;
 }
 
 .crisis-card {
   color: var(--ink);
   border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  background: var(--lavender);
+  border-right: 5px solid var(--lavender);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .crisis-icon {
@@ -466,7 +477,7 @@ audio:focus-visible {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--butter);
+  background: var(--canvas);
 }
 
 ::-webkit-scrollbar-thumb {

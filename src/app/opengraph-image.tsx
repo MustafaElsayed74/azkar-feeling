@@ -14,7 +14,7 @@ export default function OpenGraphImage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#FEEB9C',
+          background: '#FBFAF8',
           color: '#392B3D',
           fontFamily: 'sans-serif',
           direction: 'rtl',
@@ -26,9 +26,10 @@ export default function OpenGraphImage() {
             flexDirection: 'column',
             alignItems: 'center',
             padding: '64px 90px',
-            border: '3px solid #392B3D',
+            border: '3px solid #E3DCE5',
+            borderTop: '14px solid #CBA1D4',
             borderRadius: 44,
-            background: '#CBA1D4',
+            background: '#FFFFFF',
           }}
         >
           <div style={{ fontSize: 76, marginBottom: 20 }}>🤲</div>
