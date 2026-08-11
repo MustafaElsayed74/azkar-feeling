@@ -14,7 +14,7 @@ export default function OpenGraphImage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #FEEB9C 0%, #FFF6CA 45%, #CBA1D4 100%)',
+          background: '#FEEB9C',
           color: '#392B3D',
           fontFamily: 'sans-serif',
           direction: 'rtl',
@@ -26,14 +26,14 @@ export default function OpenGraphImage() {
             flexDirection: 'column',
             alignItems: 'center',
             padding: '64px 90px',
-            border: '3px solid rgba(104, 67, 112, 0.28)',
+            border: '3px solid #392B3D',
             borderRadius: 44,
-            background: 'rgba(255, 253, 244, 0.72)',
+            background: '#CBA1D4',
           }}
         >
           <div style={{ fontSize: 76, marginBottom: 20 }}>🤲</div>
           <div style={{ fontSize: 64, fontWeight: 800 }}>أذكار وأدعية</div>
-          <div style={{ marginTop: 18, fontSize: 32, color: '#684370' }}>
+          <div style={{ marginTop: 18, fontSize: 32, color: '#392B3D' }}>
             حسب شعورك
           </div>
         </div>
