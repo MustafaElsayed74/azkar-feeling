@@ -19,6 +19,8 @@ import type { DuaItem } from '@/types';
 import { SITE_URL } from '@/lib/constants';
 import { getArabicDuaTitle } from '@/lib/dua-titles';
 import { formatArabicReference } from '@/lib/references';
+import { AudioPlayer } from './AudioPlayer';
+import { Toast } from './Toast';
 
 interface DuaCardProps {
   dua: DuaItem;
@@ -123,7 +125,13 @@ export function DuaCard({
   const [showAudio, setShowAudio] = useState(false);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [shareStatus, setShareStatus] = useState('');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isCreatingImage, setIsCreatingImage] = useState(false);
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    window.setTimeout(() => setToastMessage(null), 3000);
+  };
 
   useEffect(() => {
     if (!copied) return;
@@ -172,6 +180,7 @@ export function DuaCard({
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      triggerToast('تم نسخ الذكر بنجاح ✨');
     } catch {
       setCopied(false);
     }
@@ -183,7 +192,7 @@ export function DuaCard({
         await navigator.share({ title: arabicTitle, text: shareText });
       } else {
         await navigator.clipboard.writeText(shareText);
-        setShareStatus('تم نسخ النص، ويمكنك مشاركته الآن.');
+        triggerToast('تم نسخ نص الذكر بنجاح ✨');
       }
       setShowShareOptions(false);
     } catch (error) {
@@ -199,7 +208,7 @@ export function DuaCard({
         await navigator.share({ title: arabicTitle, url: duaUrl });
       } else {
         await navigator.clipboard.writeText(duaUrl);
-        setShareStatus('تم نسخ الرابط.');
+        triggerToast('تم نسخ رابط الذكر بنجاح ✨');
       }
       setShowShareOptions(false);
     } catch (error) {
@@ -304,7 +313,7 @@ export function DuaCard({
         downloadLink.download = file.name;
         downloadLink.click();
         window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
-        setShareStatus('تم تنزيل صورة الذكر.');
+        triggerToast('تم تنزيل صورة الذكر بنجاح ✨');
       }
       setShowShareOptions(false);
     } catch (error) {
@@ -346,7 +355,7 @@ export function DuaCard({
                   targetSlug ? { ...dua, feeling_slug: targetSlug } : dua,
                 )
               }
-              className={`icon-button ${isBookmarked ? 'is-bookmarked' : ''}`}
+              className={`icon-button ${isBookmarked ? 'is-bookmarked animate-heart-pulse' : ''}`}
               aria-label={
                 isBookmarked ? 'إزالة من المحفوظات' : 'حفظ في المحفوظات'
               }
@@ -367,12 +376,7 @@ export function DuaCard({
       )}
 
       {showAudio && dua.audio_url && (
-        <div className="details-drawer my-4 p-3">
-          <audio controls autoPlay className="h-9 w-full">
-            <source src={dua.audio_url} />
-            المتصفح لا يدعم التشغيل الصوتي.
-          </audio>
-        </div>
+        <AudioPlayer src={dua.audio_url} />
       )}
 
       {showEnglish && hasDetails && (
@@ -433,7 +437,11 @@ export function DuaCard({
               className="secondary-button compact"
               aria-expanded={showEnglish}
             >
-              {showEnglish ? 'إخفاء الترجمة' : 'الترجمة والسياق'}
+              {showEnglish
+                ? 'إخفاء التفاصيل'
+                : (dua.translation || dua.transliteration)
+                  ? 'الترجمة والسياق'
+                  : 'السياق والفضل'}
             </button>
           )}
 
@@ -508,6 +516,8 @@ export function DuaCard({
           {shareStatus}
         </p>
       )}
+
+      <Toast message={toastMessage} />
 
       <span className="sr-only" aria-live="polite">
         {copied ? 'تم نسخ الذكر' : ''}

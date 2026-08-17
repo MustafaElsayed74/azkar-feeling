@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Heart, Trash2 } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { DuaCard } from '@/components/DuaCard';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { useBookmarks } from '@/hooks/useBookmarks';
 
 export function BookmarksClient() {
@@ -13,12 +15,7 @@ export function BookmarksClient() {
     toggleBookmark,
     clearBookmarks,
   } = useBookmarks();
-
-  const handleClearAll = () => {
-    if (window.confirm('هل تريد مسح جميع الأدعية والأذكار المحفوظة؟')) {
-      clearBookmarks();
-    }
-  };
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   return (
     <div className="app-shell flex min-h-screen flex-col">
@@ -48,7 +45,7 @@ export function BookmarksClient() {
           {bookmarks.length > 0 && (
             <button
               type="button"
-              onClick={handleClearAll}
+              onClick={() => setIsConfirmOpen(true)}
               className="danger-button"
             >
               <Trash2 className="h-4 w-4" />
@@ -80,6 +77,16 @@ export function BookmarksClient() {
             </Link>
           </div>
         )}
+
+        <ConfirmModal
+          isOpen={isConfirmOpen}
+          title="مسح جميع المحفوظات"
+          message="هل أنت تأكد من رغبتك في مسح كافة الأدعية والأذكار المحفوظة من جهازك؟ لا يمكن التراجع عن هذا الإجراء."
+          confirmText="نعم، إزالة الكل"
+          cancelText="إلغاء"
+          onConfirm={clearBookmarks}
+          onClose={() => setIsConfirmOpen(false)}
+        />
       </main>
 
       <Footer />

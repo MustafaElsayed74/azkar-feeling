@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Compass, Search } from 'lucide-react';
+import { BookOpen, Compass, Search, X } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FeelingCard } from '@/components/FeelingCard';
@@ -80,18 +80,28 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-9">
         <div className="relative mb-6 sm:hidden">
-          <Search className="theme-muted absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+          <Search className="theme-muted absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none" />
           <label htmlFor="mobile-search" className="sr-only">
             ابحث عن شعور أو دعاء
           </label>
           <input
             id="mobile-search"
-            type="search"
+            type="text"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="ابحث عن شعور أو دعاء..."
-            className="theme-input w-full rounded-2xl py-2.5 pl-4 pr-10 text-sm"
+            className="theme-input w-full rounded-2xl py-2.5 pl-9 pr-10 text-sm"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-[var(--muted)] hover:text-[var(--ink)]"
+              aria-label="مسح البحث"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         <section className="hero-panel px-5 py-8 text-center sm:px-8 sm:py-10">
@@ -104,7 +114,7 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
             مصدره وسياقه كلما توفر.
           </p>
 
-          <div className="mt-6 flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+          <div className="mt-6 flex items-center gap-2 overflow-x-auto py-1 no-scrollbar scroll-mask-x">
             {feelings.slice(0, 10).map((feeling) => (
               <Link
                 key={feeling.feeling_slug}
