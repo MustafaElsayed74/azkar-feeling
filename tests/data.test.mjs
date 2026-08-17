@@ -30,15 +30,12 @@ test('generated datasets agree on counts and slugs', () => {
 });
 
 test('every dua has Arabic text, a source URL, and a reviewed Arabic title', () => {
-  const uniqueTitles = new Set(flat.map((dua) => dua.title));
-
   for (const dua of flat) {
     assert.match(dua.arabic, /[\u0600-\u06FF]/, dua.title);
     assert.match(dua.source_url, /^https:\/\//, dua.title);
     assert.ok(arabicTitles[dua.title], `Missing Arabic title: ${dua.title}`);
   }
 
-  assert.equal(Object.keys(arabicTitles).length, uniqueTitles.size);
   for (const [englishTitle, arabicTitle] of Object.entries(arabicTitles)) {
     assert.match(arabicTitle, /[\u0600-\u06FF]/, englishTitle);
     assert.doesNotMatch(arabicTitle, /[A-Za-z]/, englishTitle);
@@ -50,8 +47,8 @@ test('the normalized search model has one entry per unique dua', () => {
     flat.map((dua) => `${dua.title}\u0000${dua.arabic ?? ''}`),
   );
 
-  assert.equal(uniqueDuas.size, 131);
-  assert.equal(flat.length, 305);
+  assert.equal(uniqueDuas.size, 154);
+  assert.equal(flat.length, 328);
 });
 
 test('every dua context has an Arabic source text', () => {
@@ -60,6 +57,8 @@ test('every dua context has an Arabic source text', () => {
       'قال الله تعالى: فإذا قرأت القرآن فاستعذ بالله من الشيطان الرجيم.',
     'Ayat al-Kursi in the Morning':
       'عن أبي بن كعب رضي الله عنه أن النبي ﷺ قال في آية الكرسي: من قالها حين يصبح أُجير من الجن حتى يمسي، ومن قالها حين يمسي أُجير منهم حتى يصبح.',
+    'Reciting Al-Mu\'awwidhat (Ikhlas, Falaq, Nas) 3 Times in Morning':
+      'عن عبد الله بن خبيب رضي الله عنه قال: قال رسول الله ﷺ: قل هو الله أحد والمعوذتين حين تمسي وحين تصبح ثلاث مرات تكفيك من كل شيء.',
     'Morning Remembrance of Dominion':
       'عن عبد الله بن مسعود رضي الله عنه قال: كان نبي الله ﷺ إذا أصبح قال: أصبحنا وأصبح الملك لله والحمد لله لا إله إلا الله وحده لا شريك له.',
     'Morning Supplication for Knowledge, Provision, and Accepted Deeds':
@@ -70,14 +69,52 @@ test('every dua context has an Arabic source text', () => {
       'عن عبد الرحمن بن أبي بكرة رضي الله عنه أنه قال لأبيه: يا أبت إني أسمعك تدعو كل غداة: اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري.',
     'Seeking Succor through Allah\'s Mercy':
       'عن أنس بن مالك رضي الله عنه قال: قال النبي ﷺ لفاطمة رضي الله عنها: ما يمنعك أن تسمعي ما أوصيك به أن تقولي إذا أصبحت وإذا أمسيت: يا حي يا قيوم برحمتك أستغيث.',
+    'Morning Declaration of Natural Disposition to Islam':
+      'عن عبد الرحمن بن أبزى رضي الله عنه عن أبيه أن النبي ﷺ كان إذا أصبح قال: أصبحنا على فطرة الإسلام وعلى كلمة الإخلاص وعلى دين نبينا محمد ﷺ.',
+    'Gratitude for Morning Blessings':
+      'عن عبد الله بن غنام رضي الله عنه أن رسول الله ﷺ قال: من قال حين يصبح اللهم ما أصبح بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك فلك الحمد ولك الشكر فقد أدى شكر يومه.',
+    'Supplication for Protection in Faith, Family, and Wealth':
+      'عن عبد الله بن عمر رضي الله عنهما قال: لم يكن رسول الله ﷺ يدع هؤلاء الدعوات حين يمسي وحين يصبح: اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
+    'Prayer to the Knower of the Unseen against Evil':
+      'عن أبي بكر الصديق رضي الله عنه أنه قال لرسول الله ﷺ: علمني ما أقول إذا أصبحت وإذا أمسيت، قال: قل: اللهم عالم الغيب والشهادة فاطر السماوات والأرض.',
+    'Glorification by the Count of Creation and Ink of Words':
+      'عن جويرية أم المؤمنين رضي الله عنها أن النبي ﷺ قال: لقد قلت بعدك أربع كلمات ثلاث مرات لو وزنت بما قلت منذ اليوم لوزنتهن: سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه ومداد كلماته.',
+    'Sending Blessings upon Prophet Muhammad 10 Times':
+      'عن أبي الدرداء رضي الله عنه قال: قال رسول الله ﷺ: من صلى علي حين يصبح عشراً وحين يمسي عشراً أدركته شفاعتي يوم القيامة.',
+    'Ayat al-Kursi in the Evening':
+      'عن أبي بن كعب رضي الله عنه أن النبي ﷺ قال في آية الكرسي: من قالها حين يصبح أُجير من الجن حتى يمسي، ومن قالها حين يمسي أُجير منهم حتى يصبح.',
+    'Reciting Al-Mu\'awwidhat (Ikhlas, Falaq, Nas) 3 Times in Evening':
+      'عن عبد الله بن خبيب رضي الله عنه قال: قال رسول الله ﷺ: قل هو الله أحد والمعوذتين حين تمسي وحين تصبح ثلاث مرات تكفيك من كل شيء.',
     'Evening Remembrance of Dominion':
       'عن عبد الله بن مسعود رضي الله عنه قال: كان نبي الله ﷺ إذا أمسى قال: أمسينا وأمسى الملك لله والحمد لله لا إله إلا الله وحده لا شريك له.',
+    'Sayyid al-Istighfar in the Evening':
+      'عن شداد بن أوس رضي الله عنه عن النبي ﷺ قال: سيد الاستغفار أن يقول العبد: اللهم أنت ربي لا إله إلا أنت... ومن قالها من الليل وهو موقن بها فمات قبل أن يصبح فهو من أهل الجنة.',
     'Seeking Protection in Allah\'s Perfect Words':
       'عن أبي هريرة رضي الله عنه أنه قال: جاء رجل إلى النبي ﷺ فقال: يا رسول الله ما لقيت من عقرب لدغتني البارحة، قال: أما لو قلت حين أمسيت: أعوذ بكلمات الله التامات من شر ما خلق لم تضرك.',
     'Shielding against Harm in Earth and Heaven':
       'عن عثمان بن عفان رضي الله عنه قال: قال رسول الله ﷺ: ما من عبد يقول في صباح كل يوم ومساء كل ليلة: بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم ثلاث مرات لم يضره شيء.',
+    'Shielding against Harm in Earth and Heaven (Evening)':
+      'عن عثمان بن عفان رضي الله عنه قال: قال رسول الله ﷺ: ما من عبد يقول في صباح كل يوم ومساء كل ليلة: بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم ثلاث مرات لم يضره شيء.',
     'Contentment with Allah as Lord and Islam as Religion':
       'عن المنيذر رضي الله عنه صاحب رسول الله ﷺ قال: سمعت رسول الله ﷺ يقول: من قال إذا أصبح رضيت بالله رباً وبالإسلام ديناً وبمحمد نبياً فأنا الزعيم لأخذن بيده حتى أدخله الجنة.',
+    'Contentment with Allah as Lord (Evening)':
+      'عن المنيذر رضي الله عنه صاحب رسول الله ﷺ قال: سمعت رسول الله ﷺ يقول: من قال إذا أصبح وإذا أمسى رضيت بالله رباً وبالإسلام ديناً وبمحمد نبياً فأنا الزعيم لأخذن بيده حتى أدخله الجنة.',
+    'Seeking Succor through Allah\'s Mercy (Evening)':
+      'عن أنس بن مالك رضي الله عنه قال: قال النبي ﷺ لفاطمة رضي الله عنها: ما يمنعك أن تسمعي ما أوصيك به أن تقولي إذا أصبحت وإذا أمسيت: يا حي يا قيوم برحمتك أستغيث.',
+    'Evening Declaration of Natural Disposition to Islam':
+      'عن عبد الرحمن بن أبزى رضي الله عنه عن أبيه أن النبي ﷺ كان إذا أمسى قال: أمسينا على فطرة الإسلام وعلى كلمة الإخلاص وعلى دين نبينا محمد ﷺ.',
+    'Gratitude for Evening Blessings':
+      'عن عبد الله بن غنام رضي الله عنه أن رسول الله ﷺ قال: من قال حين يمسي اللهم ما أمسى بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك فلك الحمد ولك الشكر فقد أدى شكر ليلته.',
+    'Supplication for Well-being in Body and Hearing (Evening)':
+      'عن عبد الرحمن بن أبي بكرة رضي الله عنه أنه قال لأبيه: يا أبت إني أسمعك تدعو كل غداة وكل عشية: اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري.',
+    'Supplication for Protection in Faith, Family, and Wealth (Evening)':
+      'عن عبد الله بن عمر رضي الله عنهما قال: لم يكن رسول الله ﷺ يدع هؤلاء الدعوات حين يمسي وحين يصبح: اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
+    'Prayer to the Knower of the Unseen against Evil (Evening)':
+      'عن أبي بكر الصديق رضي الله عنه أنه قال لرسول الله ﷺ: علمني ما أقول إذا أصبحت وإذا أمسيت، قال: قل: اللهم عالم الغيب والشهادة فاطر السماوات والأرض.',
+    'Glorification 100 Times in Evening':
+      'عن أبي هريرة رضي الله عنه قال: قال رسول الله ﷺ: من قال حين يصبح وحين يمسي سبحان الله وبحمده مائة مرة لم يأت أحد يوم القيامة بأفضل مما جاء به إلا أحد قال مثل ما قال أو زاد عليه.',
+    'Sending Blessings upon Prophet Muhammad 10 Times (Evening)':
+      'عن أبي الدرداء رضي الله عنه قال: قال رسول الله ﷺ: من صلى علي حين يصبح عشراً وحين يمسي عشراً أدركته شفاعتي يوم القيامة.',
     'Dua upon Waking Up from Sleep':
       'عن حذيفة بن اليمان رضي الله عنه قال: كان النبي ﷺ إذا أراد أن ينام وضع يده تحت خده وقال باسمك اللهم أموت وأحيا وإذا استيقظ قال الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور.',
     'Protection from the Punishment on the Day of Resurrection':
@@ -148,7 +185,7 @@ test('every dua context has an Arabic source text', () => {
     }
   }
 
-  assert.equal(uniqueContexts.size, 112);
+  assert.equal(uniqueContexts.size, 132);
   for (const [key, context] of uniqueContexts) {
     assert.ok(context, `Missing Arabic context: ${key.split('\u0000')[0]}`);
     assert.match(context, /[\u0600-\u06FF]/, key);

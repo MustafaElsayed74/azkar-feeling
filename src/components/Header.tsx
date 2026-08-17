@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, Search, X } from 'lucide-react';
 import { useBookmarks } from '@/hooks/useBookmarks';
 
@@ -20,12 +21,19 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="theme-icon-wrap w-9 h-9 rounded-xl text-lg">
-            🤲
+          <div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-sm border border-[var(--border)] shrink-0">
+            <Image
+              src="/logo.png"
+              alt="شعار مأوى"
+              fill
+              className="object-cover"
+              sizes="40px"
+              priority
+            />
           </div>
           <div>
             <span className="block text-lg font-extrabold tracking-wide">مأوى</span>
-            <span className="theme-muted block text-[10px] font-semibold">أذكار وأدعية حسب الشعور</span>
+            <span className="theme-muted block text-[10px] font-semibold">أذكارك اليومية ومأوى قلبك</span>
           </div>
         </Link>
 
