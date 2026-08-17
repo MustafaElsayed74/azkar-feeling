@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Compass, GraduationCap, Search, Sun, X } from 'lucide-react';
+import { BookOpen, Compass, GraduationCap, Search, Sparkles, Sun, X } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FeelingCard } from '@/components/FeelingCard';
@@ -20,78 +20,45 @@ interface HomeClientProps {
   searchDuas: SearchDuaItem[];
 }
 
-function normalizeSearchText(value: string): string {
-  return value
-    .toLocaleLowerCase('ar')
-    .normalize('NFKD')
-    .replace(/[\u064B-\u065F\u0670]/g, '')
-    .trim();
-}
-
 export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'daily' | 'situational' | 'emotional'>('all');
-  const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks();
-  const normalizedQuery = normalizeSearchText(searchQuery);
-
-  const filteredFeelings = useMemo(
-    () =>
-      feelings.filter((feeling) =>
-        normalizeSearchText(
-          `${feeling.arabic_name} ${feeling.feeling_name} ${feeling.feeling_slug}`,
-        ).includes(normalizedQuery),
-      ),
-    [feelings, normalizedQuery],
-  );
-
-  const displayedFeelings = useMemo(() => {
-    if (activeTab === 'all') return filteredFeelings;
-    return filteredFeelings.filter((f) => (f.category || 'emotional') === activeTab);
-  }, [filteredFeelings, activeTab]);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
 
   const searchResults = useMemo(() => {
-    if (normalizedQuery.length < 2) return [];
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return [];
 
-    return searchDuas.filter((dua) =>
-      normalizeSearchText(
-        [
-          dua.title_arabic,
-          dua.title,
-          dua.arabic,
-          dua.translation,
-          dua.transliteration,
-          dua.hadith,
-          dua.reference,
-          ...dua.feelings.flatMap((feeling) => [
-            feeling.name,
-            feeling.slug,
-            feeling.arabic_name,
-          ]),
-        ]
-          .filter(Boolean)
-          .join(' '),
-      ).includes(normalizedQuery),
-    );
-  }, [normalizedQuery, searchDuas]);
+    return searchDuas.filter((dua) => {
+      const matchTitle = (dua.title || '').toLowerCase().includes(query);
+      const matchArabicTitle = (dua.title_arabic || '').includes(query);
+      const matchArabic = (dua.arabic || '').includes(query);
+      const matchTranslation = (dua.translation || '').toLowerCase().includes(query);
+      const matchFeelings = dua.feelings.some((f) =>
+        (f.arabic_name || '').includes(query) || (f.name || '').toLowerCase().includes(query)
+      );
 
-  const searchingDuas = normalizedQuery.length > 1;
+      return matchTitle || matchArabicTitle || matchArabic || matchTranslation || matchFeelings;
+    });
+  }, [searchQuery, searchDuas]);
+
+  const filteredFeelings = useMemo(() => {
+    if (activeTab === 'all') return feelings;
+    if (activeTab === 'daily') return feelings.filter((f) => f.category === 'daily');
+    if (activeTab === 'situational') return feelings.filter((f) => f.category === 'situational');
+    return feelings.filter((f) => (f.category || 'emotional') === 'emotional');
+  }, [feelings, activeTab]);
+
+  const searchingDuas = searchQuery.trim().length > 0;
 
   return (
     <div className="app-shell flex min-h-screen flex-col">
-      <Header
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        bookmarkCount={bookmarks.length}
-      />
+      <Header />
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-9">
-        <div className="relative mb-6 sm:hidden">
-          <Search className="theme-muted absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none" />
-          <label htmlFor="mobile-search" className="sr-only">
-            ابحث عن شعور أو دعاء
-          </label>
+      <main className="container mx-auto max-w-4xl flex-1 px-4 py-6">
+        <div className="relative mb-6">
+          <Search className="absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
           <input
-            id="mobile-search"
             type="text"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
@@ -111,20 +78,23 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
         </div>
 
         <section className="hero-panel px-5 py-8 text-center sm:px-8 sm:py-10">
-          <span className="hero-kicker">ملجؤك اليومي من الأذكار والأدعية</span>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            الأذكار اليومية والحالات النفسية
+          <span className="hero-kicker">
+            <Sparkles className="h-3.5 w-3.5 text-[var(--ink)]" />
+            <span>مأوى القلوب وسكينة النفوس</span>
+          </span>
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl text-[var(--ink)]">
+            أذكارك اليومية وما تطمئن به روحك
           </h1>
           <p className="theme-muted mx-auto mt-3 max-w-xl text-sm font-medium leading-7">
-            اختر إحساسك أو مناسبتك لتجد الأذكار والأدعية المأثورة من القرآن والسنة مع سياقها وفضلها.
+            ابتدئ يومك بأذكار الصباح والمساء، أو اختر ما يمر به قلبك الآن لتجد الأدعية والأذكار المأثورة من القرآن الكريم والسُنّة النبوية الشريفة.
           </p>
 
-          <div className="mt-6 flex items-center gap-2 overflow-x-auto py-1 no-scrollbar scroll-mask-x">
-            {feelings.slice(0, 12).map((feeling) => (
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 py-1">
+            {feelings.slice(0, 10).map((feeling) => (
               <Link
                 key={feeling.feeling_slug}
                 href={`/feeling/${feeling.feeling_slug}`}
-                className="filter-pill shrink-0"
+                className="filter-pill shrink-0 hover:scale-105 transition-transform"
               >
                 <span className="filter-dot" aria-hidden="true" />
                 <span>{feeling.arabic_name}</span>
@@ -238,17 +208,12 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
             <div className="mb-5 flex items-center justify-between">
               <h2 id="feelings-title" className="section-heading">
                 <Compass className="h-5 w-5" />
-                <span>
-                  {activeTab === 'all' && `جميع المجموعات والأذكار (${displayedFeelings.length})`}
-                  {activeTab === 'daily' && `🌅 الأذكار اليومية وأوقات اليوم (${displayedFeelings.length})`}
-                  {activeTab === 'situational' && `🎓 أذكار المواقف والامتحانات والسفر (${displayedFeelings.length})`}
-                  {activeTab === 'emotional' && `🤍 أذكار وحالات المشاعر النفسية (${displayedFeelings.length})`}
-                </span>
+                <span>أقسام الأذكار والأدعية ({filteredFeelings.length})</span>
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-              {displayedFeelings.map((feeling) => (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {filteredFeelings.map((feeling) => (
                 <FeelingCard
                   key={feeling.feeling_slug}
                   name={feeling.feeling_name}

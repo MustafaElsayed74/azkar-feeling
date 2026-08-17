@@ -131,23 +131,36 @@ input {
 }
 
 .hero-panel {
+  position: relative;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-top: 5px solid var(--lavender);
-  border-radius: 1.25rem;
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow: 0 16px 40px rgba(51, 39, 55, 0.06);
+}
+
+.hero-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--lavender) 0%, var(--butter) 50%, var(--lavender) 100%);
 }
 
 .hero-kicker {
   display: inline-flex;
-  padding: 0.35rem 0.75rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
   color: var(--ink);
-  border: 0;
+  border: 1px solid rgba(51, 39, 55, 0.08);
   border-radius: 9999px;
   background: var(--butter);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 800;
+  box-shadow: 0 2px 8px rgba(254, 235, 156, 0.4);
 }
 
 .filter-pill {
