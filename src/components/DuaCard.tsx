@@ -263,7 +263,7 @@ export function DuaCard({
     context.fillStyle = '#332737';
     context.font = `700 28px ${cairoFont}`;
     context.textAlign = 'center';
-    context.fillText('أذكار وأدعية', 852, 147);
+    context.fillText('مأوى', 852, 147);
 
     context.textAlign = 'right';
     context.font = `700 48px ${cairoFont}`;
@@ -290,7 +290,7 @@ export function DuaCard({
     context.font = `600 28px ${cairoFont}`;
     context.fillText(arabicReference, 930, referenceY);
     context.font = `500 24px ${cairoFont}`;
-    context.fillText('أذكار وأدعية حسب شعورك', 930, referenceY + 50);
+    context.fillText('مأوى — أذكار وأدعية حسب شعورك', 930, referenceY + 50);
 
     return canvasToBlob(canvas);
   };

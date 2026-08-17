@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
           </div>
           <div>
             <span className="block text-sm font-extrabold">
-              أذكار وأدعية حسب شعورك
+              مأوى — أذكار وأدعية حسب شعورك
             </span>
             <a
               href={SITE_URL}

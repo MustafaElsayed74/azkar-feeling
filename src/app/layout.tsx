@@ -19,11 +19,11 @@ const amiri = Amiri({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'أذكار وأدعية حسب شعورك | أدعية من القرآن والسنة',
+  title: 'مأوى | أذكار وأدعية حسب شعورك من القرآن والسنة',
   description: SITE_DESCRIPTION,
-  keywords: ['أذكار', 'أدعية حسب الشعور', 'أدعية نبوية', 'أدعية من القرآن', 'حصن المسلم', 'دعاء الحزن', 'دعاء القلق', 'azkar feeling'],
+  keywords: ['مأوى', 'mawa', 'أذكار', 'أدعية حسب الشعور', 'أدعية نبوية', 'أدعية من القرآن', 'حصن المسلم', 'دعاء الحزن', 'دعاء القلق', 'azkar feeling'],
   openGraph: {
-    title: 'أذكار وأدعية حسب شعورك',
+    title: 'مأوى | أذكار وأدعية حسب شعورك',
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     siteName: SITE_NAME,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'أذكار وأدعية حسب شعورك',
+    title: 'مأوى | أذكار وأدعية حسب شعورك',
     description: SITE_DESCRIPTION,
     images: ['/opengraph-image'],
   },

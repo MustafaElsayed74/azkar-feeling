@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: FeelingPageProps) {
   if (!group) return { title: 'الشعور غير موجود' };
 
   return {
-    title: `أدعية وأذكار عند الشعور بـ (${group.arabic_name}) | أذكار وأدعية`,
+    title: `أدعية وأذكار عند الشعور بـ (${group.arabic_name}) | مأوى`,
     description: `الأدعية والأذكار النبوية المستحبة عند الشعور بـ (${group.arabic_name}) من القرآن الكريم والسنة المطهرة.`,
     alternates: {
       canonical: `/feeling/${group.slug}`,

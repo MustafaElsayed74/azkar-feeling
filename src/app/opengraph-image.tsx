@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'أذكار وأدعية حسب شعورك';
+export const alt = 'مأوى — أذكار وأدعية حسب شعورك';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -33,9 +33,9 @@ export default function OpenGraphImage() {
           }}
         >
           <div style={{ fontSize: 76, marginBottom: 20 }}>🤲</div>
-          <div style={{ fontSize: 64, fontWeight: 800 }}>أذكار وأدعية</div>
-          <div style={{ marginTop: 18, fontSize: 32, color: '#392B3D' }}>
-            حسب شعورك
+          <div style={{ fontSize: 72, fontWeight: 900 }}>مأوى</div>
+          <div style={{ marginTop: 14, fontSize: 32, color: '#756B78', fontWeight: 700 }}>
+            أذكار وأدعية حسب شعورك
           </div>
         </div>
       </div>

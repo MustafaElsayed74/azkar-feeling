@@ -24,8 +24,8 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery = '', onSearchChange
             🤲
           </div>
           <div>
-            <span className="block text-base font-extrabold">أذكار وأدعية</span>
-            <span className="theme-muted text-[10px] font-semibold">حسب الشعور</span>
+            <span className="block text-lg font-extrabold tracking-wide">مأوى</span>
+            <span className="theme-muted block text-[10px] font-semibold">أذكار وأدعية حسب الشعور</span>
           </div>
         </Link>
 
