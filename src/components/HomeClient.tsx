@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Compass, Search, X } from 'lucide-react';
+import { BookOpen, Compass, GraduationCap, Search, Sun, X } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FeelingCard } from '@/components/FeelingCard';
@@ -176,36 +176,63 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
           </section>
         ) : (
           <section className="my-8" aria-labelledby="feelings-title">
-            {/* Section Filter Tabs */}
-            <div className="my-4 flex items-center gap-2 overflow-x-auto border-b border-[var(--border)] pb-3 no-scrollbar scroll-mask-x">
-              <button
-                type="button"
-                onClick={() => setActiveTab('all')}
-                className={`filter-pill shrink-0 ${activeTab === 'all' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
-              >
-                <span>الكل ({filteredFeelings.length})</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('daily')}
-                className={`filter-pill shrink-0 ${activeTab === 'daily' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
-              >
-                <span>🌅 الأذكار اليومية</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('situational')}
-                className={`filter-pill shrink-0 ${activeTab === 'situational' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
-              >
-                <span>🎓 المذاكرة والسفر والرقية</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('emotional')}
-                className={`filter-pill shrink-0 ${activeTab === 'emotional' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
-              >
-                <span>🤍 الأذكار حسب الشعور</span>
-              </button>
+            {/* Premium Segmented Category Control */}
+            <div className="my-6 rounded-2xl bg-[var(--surface-soft)] p-1.5 border border-[var(--border)] shadow-sm">
+              <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+                {[
+                  {
+                    id: 'all' as const,
+                    label: 'جميع الأقسام',
+                    icon: Compass,
+                    count: filteredFeelings.length,
+                  },
+                  {
+                    id: 'daily' as const,
+                    label: 'الأذكار اليومية',
+                    icon: Sun,
+                    count: filteredFeelings.filter((f) => f.category === 'daily').length,
+                  },
+                  {
+                    id: 'situational' as const,
+                    label: 'المواقف والرقية',
+                    icon: GraduationCap,
+                    count: filteredFeelings.filter((f) => f.category === 'situational').length,
+                  },
+                  {
+                    id: 'emotional' as const,
+                    label: 'أذكار المشاعر',
+                    icon: BookOpen,
+                    count: filteredFeelings.filter((f) => (f.category || 'emotional') === 'emotional').length,
+                  },
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-extrabold sm:text-sm transition-all duration-200 ${
+                        isActive
+                          ? 'bg-[var(--ink)] text-white shadow-md scale-[1.01]'
+                          : 'text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--ink)]'
+                      }`}
+                    >
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-[var(--butter)]' : ''}`} />
+                      <span>{tab.label}</span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          isActive
+                            ? 'bg-white/20 text-white'
+                            : 'bg-[var(--surface)] text-[var(--muted)] border border-[var(--border)]'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="mb-5 flex items-center justify-between">

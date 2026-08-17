@@ -369,7 +369,7 @@ export function DuaCard({
 
       {dua.arabic && (
         <div className="dua-arabic-box my-3 px-4 py-5 sm:px-6">
-          <p className="font-arabic select-all text-2xl leading-loose sm:text-3xl">
+          <p className="font-arabic select-all text-2xl sm:text-3xl">
             {dua.arabic}
           </p>
         </div>

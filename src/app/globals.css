@@ -308,12 +308,15 @@ div.divider {
   border-right: 5px solid var(--butter);
   border-radius: 1rem;
   background: var(--surface-soft);
+  padding: 1.25rem 1rem;
 }
 
 .font-arabic {
   font-family: var(--font-amiri), 'Amiri', serif;
-  line-height: 2.15;
-  word-spacing: 0.1em;
+  line-height: 2.6 !important;
+  word-spacing: 0.12em;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
 }
 
 .details-drawer,
