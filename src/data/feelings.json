@@ -194,5 +194,61 @@
     "feeling_url": "https://allahuakbarofficial.com/weak/",
     "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/27-70.png",
     "description": "Duas and adhkar for feeling Weak"
+  },
+  {
+    "feeling_name": "Morning",
+    "feeling_slug": "morning",
+    "feeling_url": "https://allahuakbarofficial.com/morning/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/morning.png",
+    "description": "Morning Adhkar"
+  },
+  {
+    "feeling_name": "Evening",
+    "feeling_slug": "evening",
+    "feeling_url": "https://allahuakbarofficial.com/evening/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/evening.png",
+    "description": "Evening Adhkar"
+  },
+  {
+    "feeling_name": "Sleep",
+    "feeling_slug": "sleep",
+    "feeling_url": "https://allahuakbarofficial.com/sleep/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/sleep.png",
+    "description": "Sleep and Waking Adhkar"
+  },
+  {
+    "feeling_name": "Prayer",
+    "feeling_slug": "prayer",
+    "feeling_url": "https://allahuakbarofficial.com/prayer/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/prayer.png",
+    "description": "Post Prayer Adhkar"
+  },
+  {
+    "feeling_name": "Study",
+    "feeling_slug": "study",
+    "feeling_url": "https://allahuakbarofficial.com/study/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/study.png",
+    "description": "Duas for Studying and Exams"
+  },
+  {
+    "feeling_name": "Travel",
+    "feeling_slug": "travel",
+    "feeling_url": "https://allahuakbarofficial.com/travel/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/travel.png",
+    "description": "Duas for Travel"
+  },
+  {
+    "feeling_name": "Healing",
+    "feeling_slug": "healing",
+    "feeling_url": "https://allahuakbarofficial.com/healing/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/healing.png",
+    "description": "Duas for Healing and Ruqyah"
+  },
+  {
+    "feeling_name": "Sustenance",
+    "feeling_slug": "sustenance",
+    "feeling_url": "https://allahuakbarofficial.com/sustenance/",
+    "image_url": "https://allahuakbarofficial.com/wp-content/uploads/2025/03/sustenance.png",
+    "description": "Duas for Sustenance and Relief"
   }
 ]

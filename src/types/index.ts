@@ -22,6 +22,8 @@ export interface DuaItem {
   source_url: string;
 }
 
+export type CategoryType = 'daily' | 'situational' | 'emotional';
+
 export interface FeelingGroup {
   feeling: string;
   slug: string;
@@ -29,6 +31,7 @@ export interface FeelingGroup {
   items_count: number;
   duas: DuaItem[];
   arabic_name?: string;
+  category?: CategoryType;
 }
 
 export interface FeelingMeta {
@@ -38,6 +41,7 @@ export interface FeelingMeta {
   image_url: string;
   description: string;
   arabic_name?: string;
+  category?: CategoryType;
 }
 
 export interface FlatDuaItem extends DuaItem {

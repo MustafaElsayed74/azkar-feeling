@@ -30,6 +30,7 @@ function normalizeSearchText(value: string): string {
 
 export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'all' | 'daily' | 'situational' | 'emotional'>('all');
   const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks();
   const normalizedQuery = normalizeSearchText(searchQuery);
 
@@ -42,6 +43,11 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
       ),
     [feelings, normalizedQuery],
   );
+
+  const displayedFeelings = useMemo(() => {
+    if (activeTab === 'all') return filteredFeelings;
+    return filteredFeelings.filter((f) => (f.category || 'emotional') === activeTab);
+  }, [filteredFeelings, activeTab]);
 
   const searchResults = useMemo(() => {
     if (normalizedQuery.length < 2) return [];
@@ -89,7 +95,7 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
             type="text"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="ابحث عن شعور أو دعاء..."
+            placeholder="ابحث عن شعور أو أذكار الصباح والمذاكرة..."
             className="theme-input w-full rounded-2xl py-2.5 pl-9 pr-10 text-sm"
           />
           {searchQuery && (
@@ -105,17 +111,16 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
         </div>
 
         <section className="hero-panel px-5 py-8 text-center sm:px-8 sm:py-10">
-          <span className="hero-kicker">رفيقك اليومي من الذكر والدعاء</span>
+          <span className="hero-kicker">ملجؤك اليومي من الأذكار والأدعية</span>
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            كيف تشعر الآن؟
+            الأذكار اليومية والحالات النفسية
           </h1>
           <p className="theme-muted mx-auto mt-3 max-w-xl text-sm font-medium leading-7">
-            اختر إحساسك لتجد ذكرًا أو دعاءً مناسبًا من القرآن والسنة، مع
-            مصدره وسياقه كلما توفر.
+            اختر إحساسك أو مناسبتك لتجد الأذكار والأدعية المأثورة من القرآن والسنة مع سياقها وفضلها.
           </p>
 
           <div className="mt-6 flex items-center gap-2 overflow-x-auto py-1 no-scrollbar scroll-mask-x">
-            {feelings.slice(0, 10).map((feeling) => (
+            {feelings.slice(0, 12).map((feeling) => (
               <Link
                 key={feeling.feeling_slug}
                 href={`/feeling/${feeling.feeling_slug}`}
@@ -171,15 +176,52 @@ export function HomeClient({ feelings, searchDuas }: HomeClientProps) {
           </section>
         ) : (
           <section className="my-8" aria-labelledby="feelings-title">
+            {/* Section Filter Tabs */}
+            <div className="my-4 flex items-center gap-2 overflow-x-auto border-b border-[var(--border)] pb-3 no-scrollbar scroll-mask-x">
+              <button
+                type="button"
+                onClick={() => setActiveTab('all')}
+                className={`filter-pill shrink-0 ${activeTab === 'all' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
+              >
+                <span>الكل ({filteredFeelings.length})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('daily')}
+                className={`filter-pill shrink-0 ${activeTab === 'daily' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
+              >
+                <span>🌅 الأذكار اليومية</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('situational')}
+                className={`filter-pill shrink-0 ${activeTab === 'situational' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
+              >
+                <span>🎓 المذاكرة والسفر والرقية</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('emotional')}
+                className={`filter-pill shrink-0 ${activeTab === 'emotional' ? '!bg-[var(--lavender)] !border-[var(--ink)] font-extrabold' : ''}`}
+              >
+                <span>🤍 الأذكار حسب الشعور</span>
+              </button>
+            </div>
+
             <div className="mb-5 flex items-center justify-between">
               <h2 id="feelings-title" className="section-heading">
                 <Compass className="h-5 w-5" />
-                <span>المشاعر والأحاسيس ({filteredFeelings.length})</span>
+                <span>
+                  {activeTab === 'all' && `جميع المجموعات والأذكار (${displayedFeelings.length})`}
+                  {activeTab === 'daily' && `🌅 الأذكار اليومية وأوقات اليوم (${displayedFeelings.length})`}
+                  {activeTab === 'situational' && `🎓 أذكار المواقف والامتحانات والسفر (${displayedFeelings.length})`}
+                  {activeTab === 'emotional' && `🤍 أذكار وحالات المشاعر النفسية (${displayedFeelings.length})`}
+                </span>
               </h2>
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-              {filteredFeelings.map((feeling) => (
+              {displayedFeelings.map((feeling) => (
                 <FeelingCard
                   key={feeling.feeling_slug}
                   name={feeling.feeling_name}

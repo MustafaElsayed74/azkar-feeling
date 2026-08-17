@@ -6,7 +6,8 @@ import {
   CloudRain, Zap, Flame, Moon, CloudDrizzle, Heart, Sun, HelpCircle,
   ShieldAlert, Shield, Clock, ThumbsUp, CheckCircle2, Search,
   Coins, XCircle, Activity, Scale, UserX, EyeOff, Battery,
-  Map, ActivitySquare, AlertTriangle, Droplet, Coffee, Frown, Mountain, Smile
+  Map, ActivitySquare, AlertTriangle, Droplet, Coffee, Frown, Mountain, Smile,
+  GraduationCap, Compass, HeartPulse, Sparkles
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -18,6 +19,8 @@ const iconMap: Record<string, LucideIcon> = {
   hurt: Activity, indecisive: Scale, hypocritical: UserX, jealous: EyeOff,
   lazy: Battery, lost: Map, nervous: ActivitySquare, overwhelmed: AlertTriangle,
   regret: Droplet, tired: Coffee, unloved: Frown, weak: Mountain,
+  morning: Sun, evening: Moon, sleep: Moon, prayer: Sparkles,
+  study: GraduationCap, travel: Compass, healing: HeartPulse, sustenance: Coins,
 };
 
 interface FeelingCardProps {
